@@ -16,7 +16,8 @@
     "@inrupt/solid-client-notifications": "^1.1.1",
     "@inrupt/vocab-common-rdf": "^1.0.5",
     "@inrupt/vocab-solid": "^1.0.4",
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "fastify": "^4.12.0"
   },
   "devDependencies": {
     "css-loader": "^6.7.3",
