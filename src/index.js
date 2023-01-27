@@ -22,7 +22,7 @@ import {
     setThing
   } from "@inrupt/solid-client";
   
-import { SCHEMA_INRUPT, RDF, AS, OWL, OM, GEO } from "@inrupt/vocab-common-rdf";
+import { SCHEMA_INRUPT, RDF, AS, OWL } from "@inrupt/vocab-common-rdf";
 
 import {
   WebsocketNotification,
@@ -31,6 +31,33 @@ import {
 const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/Tanker1233";
 
 // ... authentication logic has been omitted
+
+
+// import fastify from 'fastify';
+// const server = fastify({
+//   logger: true
+// });
+
+
+// fastify.listen(1234, (err, address) => {
+//   if (err) throw err;
+// });
+
+// fastify.post('/', async (req, res) => {
+//   try {
+//     if (req.headers['content-type'] === 'application/json') {
+//       const name = req.body.name;
+//       const temperature = req.body.temperature;
+//       console.log(`Name: ${name}, Temperature: ${temperature}`);
+//       res.send({ message: 'Data received' });
+//     } else {
+//       console.log('Request body is not in JSON format');
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({ error: error });
+//   }
+// });
 
   
   const selectorIdP = document.querySelector("#select-idp");
