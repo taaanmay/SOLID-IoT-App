@@ -134,7 +134,7 @@
       <div class="row">
         <div class="col-md-2 fix-logo">
           <div class="wrapper-logo">
-            <a href="index.html" class="logo-default"><img src="pic/beyondLogo-1.png" alt="beyondLogo-1" /></a>
+            <a href="dist/index.html" class="logo-default"><img src="pic/beyondLogo-1.png" alt="beyondLogo-1" /></a>
           </div>
         </div>
         <div class="col-md-4 col-md-push-6 fix-social">
@@ -168,14 +168,13 @@
 
 <div class="page-heading">
   <h1 class="entry-title">Solid-IoT</h1>
-  <h5 style="color: white;">Please Log In to the application using the options below.</h5>
+  <h5 style="color: white;">You can access the devices that are accissbile to you on the basis of your role and permission</h5>
   <!-- <h5 style="color: white;">which was destroyed in the opening engagement of the Civil War on June 30th, 1922.</h5> -->
   
   <ul class="entry-breadcrumb">
   </ul>
 </div>
 <div id="homepage">
-
 
 
 
@@ -236,46 +235,8 @@
               <br>
               <div class="row">
                 <div>
-                  <!-- <label id="listLabel" for="titles">b. Enter items to read: </label>
-                    <textarea id="titles" name="titles" rows="5" cols="42">
-                      Leaves of Grass
-                      RDF 1.1 Primer</textarea> -->
-                      
-                      <!-- <label id="selectedTankLabel" for="select-tank">Select Tank Number </label>
-                        <textarea id="select-tank" name="select-tank" rows="5" cols="42">
-                          tank03
-                        </textarea> -->
-                        
-<!--                         
-                        <label id="selectedTankLabel" for="select-tank">Please Select the Tank</label>
-                        <select id="select-tank" name="select-tank">
-                          <option value="">--Please select the tank--</option>
-                          
-                          
-                          <option value="tank01">Tank 01</option>
-                          <option value="tank02">Tank 02</option>
-                          <option value="tank03">Tank 03</option>
-                          <option value="tank04">Tank 04</option>
-                          
-                          
-                        </select> -->
-                        <!-- <label id="timeLabel" for="time">b. Enter current time: </label>
-                        <textarea id="time" name="time" rows="5" cols="42">
-                          04-01-2022
-                        </textarea>
-                        
-                        <label id="temperatureLabel" for="temps">b. Enter temperature: </label>
-                        <textarea id="temps" name="temps" rows="5" cols="42">
-                          14
-                        </textarea>
-                        
-                        <label id="latitudeLongitudeLabel" for="latLon">b. Enter Latitude and Longitude: </label>
-                        <textarea id="latLon" name="latLon" rows="5" cols="42">
-                          51.470,-2.5946
-                        </textarea> -->
-                        
-                        
-                        
+                 
+                           
                         <button name="btnCreate" id="btnCreate" style="display: none;" >Create Websocket Notification</button>
                       </div>
                       <br>
@@ -297,43 +258,29 @@
                 
                 <!-- Add New Tank -->
                 <div id="new-tank" class="new-tank" style="display:show">
-                  <h1>Create a New Device</h1>
-                  <!-- <form action="/create-device" method="post"> -->
+                  <!-- <h1>Create a New Device</h1>
+                  
                   
                     <label for="tank-name">Name:</label><br>
                     <input type="text-tank" id="tank-name" name="tank-name"><br>
                     <label for="tank-manager">Tank Manager:</label><br>
                     <input type="text-tank" id="tank-manager" name="tank-manager"><br>
                     <label for="tank-viewers">Tank Viewers:</label><br>
-                    <input type="text-tank" id="tank-viewers" name="tank-viewers"><br>
-                    <!-- <input type="submit-tank" value="Create"> -->
-                    <button name="submit-tank" id="submit-tank">Add New Tank</button>
-
-                    <button name="submit-read-tank" id="submit-read-tank" style="display:none">Get Devices in Pod</button>
+                    <input type="text-tank" id="tank-viewers" name="tank-viewers"><br> -->
+                    
+                    <button name="submit-tank" id="submit-tank" style="display:none">Add New Tank</button>
                   
                 </div>
         
         
                  <!-- Show Tank Data -->
+                 <button name="submit-read-tank" id="submit-read-tank">Get Devices in Pod</button>
                  <div class="fancy-box">
                   <div class="fancy-box-header">
-                    <h2>Show Tank Data</h2>
+                    <h2>Show Container Data</h2>
                   </div>
                   <div class="fancy-box-content">
-                    <table>
-                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Date Modified</th>
-                        <th>Temperature</th>
-                      </tr>
-                      <tr>
-                        <td id="name"></td>
-                        <td id="type"></td>
-                        <td id="dateModified"></td>
-                        <td id="temperature"></td>
-                      </tr>
-                    </table>
+                    <textarea id="savedtitles" name="savedtitles" rows="5" cols="42" ></textarea>
                   </div>
                 </div>
         

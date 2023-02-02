@@ -59,6 +59,10 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
 //   }
 // });
 
+
+
+
+
   
   const selectorIdP = document.querySelector("#select-idp");
   const selectorPod = document.querySelector("#select-pod");
@@ -68,6 +72,8 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   const labelCreateStatus = document.querySelector("#labelCreateStatus");
 
   const buttonCreateNewTank = document.querySelector("#submit-tank");
+  const buttonReadDataFromContainer = document.querySelector("#submit-read-tank");
+  
   
   buttonRead.setAttribute("disabled", "disabled");
   buttonLogin.setAttribute("disabled", "disabled");
@@ -80,8 +86,10 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   
     return login({
       oidcIssuer: SELECTED_IDP,
-      redirectUrl: window.location.href,
-      clientName: "Getting started app"
+      // redirectUrl: window.location.href,
+      redirectUrl: "http://localhost:8080/add-device.html",
+      clientName: "Getting started app",
+      restorePreviousSession: true
     });
   }
   
@@ -91,23 +99,44 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     await handleIncomingRedirect();
   
     const session = getDefaultSession();
+
+    if(session.info.webId != null){
+      console.log("Web ID is not null and it is "+session.info.webId);
+    }else{
+      console.log("WEb Id is null.");
+      login({
+        oidcIssuer: "https://solidcommunity.net",
+        redirectUrl: window.location.href,
+        clientName: "Getting started app",
+        restorePreviousSession: true
+      });
+      
+    }
+
     if (session.info.isLoggedIn) {
       // Update the page with the status.
       document.getElementById("myWebID").value = session.info.webId;
   
       // Enable Read button to read Pod URL
       buttonRead.removeAttribute("disabled");
+      console.log("WebID = "+session.info.webId);
     }
   }
+  
+
+  
+    handleRedirectAfterLogin();
   
   // The example has the login redirect back to the index.html.
   // This calls the function to process login information.
   // If the function is called when not part of the login redirect, the function is a no-op.
-  handleRedirectAfterLogin();
+  
+  
   
   // 2. Get Pod(s) associated with the WebID
   async function getMyPods() {
     const webID = document.getElementById("myWebID").value;
+    
     const mypods = await getPodUrlAll(webID, { fetch: fetch });
     
   
@@ -225,6 +254,34 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   }
 
   
+
+
+
+  async function readDataFromContainer(){
+    
+    let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
+    let readContainerUrl = `${SELECTED_POD_TEMP}dosing-data/`;
+
+    let myTanks;
+    try {
+      // Attempt to retrieve the reading list in case it already exists.
+      myTanks = await getSolidDataset(readContainerUrl, { fetch: fetch });
+      
+    } catch (error) {
+      if (typeof error.statusCode === "number" && error.statusCode === 404) {
+        // if not found, create a new SolidDataset (i.e., the reading list)
+        console.log("Nothing found at the location "+ readContainerUrl);
+      } else {
+        console.error(error.message);
+      }
+    }
+    let items = getThingAll(myTanks);
+    console.log(myTanks);
+    console.log(items);
+    document.getElementById("savedtitles").value = "Hello'";
+
+
+  }
 
 
 
@@ -362,6 +419,12 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   buttonCreateNewTank.onclick = function () {
     console.log("New Tank Button Pressed");
     createNewTank();
+  };
+
+
+  buttonReadDataFromContainer.onclick = function () {
+    console.log("Read Data from container Button Pressed");
+    readDataFromContainer();
   };
   
   selectorIdP.addEventListener("change", idpSelectionHandler);
