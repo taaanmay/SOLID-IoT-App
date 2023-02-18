@@ -19,7 +19,8 @@ import {
     getUrl,
     removeThing,
     saveSolidDatasetAt,
-    setThing
+    setThing,
+    universalAccess
   } from "@inrupt/solid-client";
   
 import { SCHEMA_INRUPT, RDF, AS, OWL } from "@inrupt/vocab-common-rdf";
@@ -29,38 +30,6 @@ import {
 } from "@inrupt/solid-client-notifications";
 
 const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/Tanker1233";
-
-// ... authentication logic has been omitted
-
-
-// import fastify from 'fastify';
-// const server = fastify({
-//   logger: true
-// });
-
-
-// fastify.listen(1234, (err, address) => {
-//   if (err) throw err;
-// });
-
-// fastify.post('/', async (req, res) => {
-//   try {
-//     if (req.headers['content-type'] === 'application/json') {
-//       const name = req.body.name;
-//       const temperature = req.body.temperature;
-//       console.log(`Name: ${name}, Temperature: ${temperature}`);
-//       res.send({ message: 'Data received' });
-//     } else {
-//       console.log('Request body is not in JSON format');
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send({ error: error });
-//   }
-// });
-
-
-
 
 
   
@@ -86,10 +55,10 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   
     return login({
       oidcIssuer: SELECTED_IDP,
-      // redirectUrl: window.location.href,
-      redirectUrl: "http://localhost:8080/add-device.html",
-      clientName: "Getting started app",
-      restorePreviousSession: true
+      redirectUrl: window.location.href,
+      // redirectUrl: "http://localhost:8080/add-device.html",
+      clientName: "UI of Solid IoT App",
+      // restorePreviousSession: true
     });
   }
   
@@ -103,13 +72,13 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     if(session.info.webId != null){
       console.log("Web ID is not null and it is "+session.info.webId);
     }else{
-      console.log("WEb Id is null.");
-      login({
-        oidcIssuer: "https://solidcommunity.net",
-        redirectUrl: window.location.href,
-        clientName: "Getting started app",
-        restorePreviousSession: true
-      });
+      console.log("WEb Id is null. Attempting to login again automatically.");
+      // login({
+      //   oidcIssuer: "https://solidcommunity.net",
+      //   redirectUrl: window.location.href,
+      //   clientName: "Getting started app",
+      //   restorePreviousSession: true
+      // });
       
     }
 
@@ -148,110 +117,88 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       podOption.value = mypod;
       selectorPod.appendChild(podOption);
     });
+
+    
   }
   
-  // 3. Create the Reading List
-  async function createList() {
-    labelCreateStatus.textContent = "";
-    const SELECTED_POD = document.getElementById("select-pod").value;
-    let SELECTED_TANK = document.getElementById("select-tank").value;
-    SELECTED_TANK = 'tank01';
+  // // 3. Create the Reading List
+  // async function createList() {
+  //   labelCreateStatus.textContent = "";
+  //   const SELECTED_POD = document.getElementById("select-pod").value;
+  //   let SELECTED_TANK = document.getElementById("select-tank").value;
+  //   SELECTED_TANK = 'tank01';
   
-    // For simplicity and brevity, this tutorial hardcodes the  SolidDataset URL.
-    // In practice, you should add in your profile a link to this resource
-    // such that applications can follow to find your list.
-    // const readingListUrl = `${SELECTED_POD}getting-started-/reading-List/my-List`;
-    const readingListUrl = `${SELECTED_POD}dosing-data/${SELECTED_TANK}`;
+  //   // For simplicity and brevity, this tutorial hardcodes the  SolidDataset URL.
+  //   // In practice, you should add in your profile a link to this resource
+  //   // such that applications can follow to find your list.
+  //   // const readingListUrl = `${SELECTED_POD}getting-started-/reading-List/my-List`;
+  //   const readingListUrl = `${SELECTED_POD}dosing-data/${SELECTED_TANK}`;
   
-    //let titles = document.getElementById("titles").value.split("\n");
-    let time = document.getElementById("time").value.split("\n");
-    let temps = document.getElementById("temps").value.split("\n");
-    let latLon = document.getElementById("latLon").value.split("\n");
+  //   //let titles = document.getElementById("titles").value.split("\n");
+  //   let time = document.getElementById("time").value.split("\n");
+  //   let temps = document.getElementById("temps").value.split("\n");
+  //   let latLon = document.getElementById("latLon").value.split("\n");
   
-    // Fetch or create a new reading list.
-    let myReadingList;
+  //   // Fetch or create a new reading list.
+  //   let myReadingList;
   
-    try {
-      // Attempt to retrieve the reading list in case it already exists.
-      myReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
-      // Clear the list to override the whole list
-      let items = getThingAll(myReadingList);
-      items.forEach((item) => {
-        myReadingList = removeThing(myReadingList, item);
-      });
-    } catch (error) {
-      if (typeof error.statusCode === "number" && error.statusCode === 404) {
-        // if not found, create a new SolidDataset (i.e., the reading list)
-        myReadingList = createSolidDataset();
-      } else {
-        console.error(error.message);
-      }
-    }
+  //   try {
+  //     // Attempt to retrieve the reading list in case it already exists.
+  //     myReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
+  //     // Clear the list to override the whole list
+  //     let items = getThingAll(myReadingList);
+  //     items.forEach((item) => {
+  //       myReadingList = removeThing(myReadingList, item);
+  //     });
+  //   } catch (error) {
+  //     if (typeof error.statusCode === "number" && error.statusCode === 404) {
+  //       // if not found, create a new SolidDataset (i.e., the reading list)
+  //       myReadingList = createSolidDataset();
+  //     } else {
+  //       console.error(error.message);
+  //     }
+  //   }
 
 
-    let item = createThing({ name: "temp" + time });
-    item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
-    item = addStringNoLocale(item, SCHEMA_INRUPT.value, temps);
-    item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, time);
-    item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', latLon);
-    item = addStringNoLocale(item,'https://schema.org/creator', session.info.webId);
-    myReadingList = setThing(myReadingList, item);
+  //   let item = createThing({ name: "temp" + time });
+  //   item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
+  //   item = addStringNoLocale(item, SCHEMA_INRUPT.value, temps);
+  //   item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, time);
+  //   item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', latLon);
+  //   item = addStringNoLocale(item,'https://schema.org/creator', session.info.webId);
+  //   myReadingList = setThing(myReadingList, item);
 
+  //   try {
+  //     // Save the SolidDataset
+  //     let savedReadingList = await saveSolidDatasetAt(
+  //       readingListUrl,
+  //       myReadingList,
+  //       { fetch: fetch }
+  //     );
   
-    // Add titles to the Dataset
-    // let i = 0;
-    // titles.forEach((title) => {
-    //   if (title.trim() !== "") {
-    //     let item = createThing({ name: "title" + i });
-    //     item = addUrl(item, RDF.type, AS.Article);
-    //     item = addStringNoLocale(item, SCHEMA_INRUPT.value, title);
-    //     myReadingList = setThing(myReadingList, item);
-    //     i++;
-    //   }
-    // });
-
-    // let i = 0;
-    // temps.forEach((temp) => {
-    //   if (temp.trim() !== "") {
-    //     let item = createThing({ name: "temp" + i });
-    //     item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
-    //     item = addStringNoLocale(item, SCHEMA_INRUPT.value, temp);
-    //     myReadingList = setThing(myReadingList, item);
-    //     i++;
-    //   }
-    // });
+  //     labelCreateStatus.textContent = "Saved";
   
-    try {
-      // Save the SolidDataset
-      let savedReadingList = await saveSolidDatasetAt(
-        readingListUrl,
-        myReadingList,
-        { fetch: fetch }
-      );
+  //     // Refetch the Reading List
+  //     savedReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
+  //     console.log(savedReadingList);
   
-      labelCreateStatus.textContent = "Saved";
+  //     let items = getThingAll(savedReadingList);
   
-      // Refetch the Reading List
-      savedReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
-      console.log(savedReadingList);
+  //     let listcontent = "";
+  //     for (let i = 0; i < items.length; i++) {
+  //       let item = getStringNoLocale(items[i], SCHEMA_INRUPT.name);
+  //       if (item !== null) {
+  //         listcontent += item + "\n";
+  //       }
+  //     }
   
-      let items = getThingAll(savedReadingList);
-  
-      let listcontent = "";
-      for (let i = 0; i < items.length; i++) {
-        let item = getStringNoLocale(items[i], SCHEMA_INRUPT.name);
-        if (item !== null) {
-          listcontent += item + "\n";
-        }
-      }
-  
-      document.getElementById("savedtitles").value = listcontent;
-    } catch (error) {
-      console.log(error);
-      labelCreateStatus.textContent = "Error" + error;
-      labelCreateStatus.setAttribute("role", "alert");
-    }
-  }
+  //     document.getElementById("savedtitles").value = listcontent;
+  //   } catch (error) {
+  //     console.log(error);
+  //     labelCreateStatus.textContent = "Error" + error;
+  //     labelCreateStatus.setAttribute("role", "alert");
+  //   }
+  // }
 
   
 
@@ -261,6 +208,8 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     
     let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
     let readContainerUrl = `${SELECTED_POD_TEMP}dosing-data/`;
+
+    readContainerUrl = `https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`;
 
     let myTanks;
     try {
@@ -294,6 +243,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     let TANK_NAME = document.getElementById("tank-name").value;
     let tankManager = document.getElementById("tank-manager").value.split("\n");
     let tankViewers = document.getElementById("tank-viewers").value.split("\n");
+    
     
     
     const createTankUrl = `${SELECTED_POD_TEMP}dosing-data/${TANK_NAME}`;
@@ -377,17 +327,23 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
           const typeField = document.querySelector('#type');
           typeField.innerHTML = typeData;
         }
-
-
-
-
-
+        
       }
-  
+      
       console.log("List Content = "+listcontent);
       document.getElementById("savedtitles").value = listcontent;
 
 
+      const session = getDefaultSession();
+
+      // Trying Access
+      var webID = `https://id.inrupt.com/iotserver01`; // Web ID of server
+      // var webID = `https://id.inrupt.com/doser001`;
+      lookupAccess(`https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`, webID, session );
+
+      giveAccessToServer(`https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`);
+
+      lookupAccess(`https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`, webID, session );
 
       const websocket = new WebsocketNotification(
         containerUrl,
@@ -403,6 +359,48 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       labelCreateStatus.setAttribute("role", "alert");
     }
   }
+
+async function lookupAccess(resource, webID, session){
+  
+  universalAccess.getAgentAccess(
+    resource,       // resource  
+    webID,   // agent
+    { fetch: fetch }                      // fetch function from authenticated session
+  ).then((agentAccess) => {
+    logAccessInfo(webID, agentAccess, resource);
+  });
+}  
+
+function logAccessInfo(agent, agentAccess, resource) {
+  console.log(`For resource::: ${resource}`);
+  if (agentAccess === null) {
+    console.log(`Could not load ${agent}'s access details.`);
+  } else {
+    console.log(`${agent}'s Access:: ${JSON.stringify(agentAccess)}`);
+  }
+}
+
+function giveAccessToServer(resource){
+  universalAccess.setAgentAccess(
+    resource,         // Resource
+    `https://id.inrupt.com/iotserver01`,     // Agent
+    { read: false, append: false, write: false, control: false  },          // Access object
+    { fetch: fetch }                         // fetch function from authenticated session
+  ).then((newAccess) => {
+    logAccessInfo2(`https://id.inrupt.com/iotserver01`, newAccess,resource)
+  });
+  
+  
+}
+
+function logAccessInfo2(agent, agentAccess, resource) {
+  console.log(`For resource::: ${resource}`);
+  if (agentAccess === null) {
+    console.log(`Could not load ${agent}'s access details.`);
+  } else {
+    console.log(`${agent}'s Access:: ${JSON.stringify(agentAccess)}`);
+  }
+}
   
   buttonLogin.onclick = function () {
     loginToSelectedIdP();
