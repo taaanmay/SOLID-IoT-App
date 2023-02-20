@@ -209,7 +209,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
     let readContainerUrl = `${SELECTED_POD_TEMP}dosing-data/`;
 
-    readContainerUrl = `https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`;
+    //readContainerUrl = `https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`;
 
     let myTanks;
     try {
@@ -228,6 +228,26 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     console.log(myTanks);
     console.log(items);
     document.getElementById("savedtitles").value = "Hello'";
+
+
+    const output = [];
+    const things = getThingAll(myTanks);
+    things.forEach((thing) => {
+    const tempObject = {
+      // text: getStringNoLocale(thing, SCHEMA_INRUPT.text),
+      // id: getInteger(thing, SCHEMA_INRUPT.identifier),
+      // date: getDatetime(thing, SCHEMA_INRUPT.dateModified),
+      // verified: getBoolean(thing, SCHEMA_INRUPT.value),
+      type: getUrl(thing, RDF.type),
+      temperature: getStringNoLocale(thing, SCHEMA_INRUPT.value),
+      tankManager: getStringNoLocale(thing, 'https://schema.org/creator'),
+      lat_long: getStringNoLocale(thing, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon'),
+      
+    };
+    output.push(tempObject);
+  });
+  console.log(output);
+
 
 
   }
