@@ -202,6 +202,10 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
 
   
 
+  export function sendDataToFrontEnd(){
+    return readDataFromContainer();
+  }
+
 
 
   async function readDataFromContainer(){
@@ -229,6 +233,8 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     console.log(items);
     document.getElementById("savedtitles").value = "Hello'";
 
+    
+
 
     const output = [];
     const things = getThingAll(myTanks);
@@ -239,6 +245,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       // date: getDatetime(thing, SCHEMA_INRUPT.dateModified),
       // verified: getBoolean(thing, SCHEMA_INRUPT.value),
       type: getUrl(thing, RDF.type),
+      date_modified: getStringNoLocale(thing, SCHEMA_INRUPT.dateModified),
       temperature: getStringNoLocale(thing, SCHEMA_INRUPT.value),
       tankManager: getStringNoLocale(thing, 'https://schema.org/creator'),
       lat_long: getStringNoLocale(thing, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon'),
@@ -248,6 +255,26 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   });
   console.log(output);
 
+  const data = output;
+
+
+  const container = document.getElementById('container');
+                  
+    container.innerHTML = '';
+    data.forEach(element => {
+      const box = document.createElement('div');
+      box.className = 'box';
+      box.innerHTML = `
+        <p>Type: ${element.type}</p>
+        <p>Temperature: ${element.temperature}</p>
+        <p>Lat/Long: ${element.lat_long}</p>
+        <p>Date Modified: ${element.date_modified}</p>
+        <p>Creator: ${element.tankManager}</p>
+      `;
+      container.appendChild(box);
+    });
+
+  return output;
 
 
   }
