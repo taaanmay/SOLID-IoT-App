@@ -120,87 +120,6 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
 
     
   }
-  
-  // // 3. Create the Reading List
-  // async function createList() {
-  //   labelCreateStatus.textContent = "";
-  //   const SELECTED_POD = document.getElementById("select-pod").value;
-  //   let SELECTED_TANK = document.getElementById("select-tank").value;
-  //   SELECTED_TANK = 'tank01';
-  
-  //   // For simplicity and brevity, this tutorial hardcodes the  SolidDataset URL.
-  //   // In practice, you should add in your profile a link to this resource
-  //   // such that applications can follow to find your list.
-  //   // const readingListUrl = `${SELECTED_POD}getting-started-/reading-List/my-List`;
-  //   const readingListUrl = `${SELECTED_POD}dosing-data/${SELECTED_TANK}`;
-  
-  //   //let titles = document.getElementById("titles").value.split("\n");
-  //   let time = document.getElementById("time").value.split("\n");
-  //   let temps = document.getElementById("temps").value.split("\n");
-  //   let latLon = document.getElementById("latLon").value.split("\n");
-  
-  //   // Fetch or create a new reading list.
-  //   let myReadingList;
-  
-  //   try {
-  //     // Attempt to retrieve the reading list in case it already exists.
-  //     myReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
-  //     // Clear the list to override the whole list
-  //     let items = getThingAll(myReadingList);
-  //     items.forEach((item) => {
-  //       myReadingList = removeThing(myReadingList, item);
-  //     });
-  //   } catch (error) {
-  //     if (typeof error.statusCode === "number" && error.statusCode === 404) {
-  //       // if not found, create a new SolidDataset (i.e., the reading list)
-  //       myReadingList = createSolidDataset();
-  //     } else {
-  //       console.error(error.message);
-  //     }
-  //   }
-
-
-  //   let item = createThing({ name: "temp" + time });
-  //   item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
-  //   item = addStringNoLocale(item, SCHEMA_INRUPT.value, temps);
-  //   item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, time);
-  //   item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', latLon);
-  //   item = addStringNoLocale(item,'https://schema.org/creator', session.info.webId);
-  //   myReadingList = setThing(myReadingList, item);
-
-  //   try {
-  //     // Save the SolidDataset
-  //     let savedReadingList = await saveSolidDatasetAt(
-  //       readingListUrl,
-  //       myReadingList,
-  //       { fetch: fetch }
-  //     );
-  
-  //     labelCreateStatus.textContent = "Saved";
-  
-  //     // Refetch the Reading List
-  //     savedReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
-  //     console.log(savedReadingList);
-  
-  //     let items = getThingAll(savedReadingList);
-  
-  //     let listcontent = "";
-  //     for (let i = 0; i < items.length; i++) {
-  //       let item = getStringNoLocale(items[i], SCHEMA_INRUPT.name);
-  //       if (item !== null) {
-  //         listcontent += item + "\n";
-  //       }
-  //     }
-  
-  //     document.getElementById("savedtitles").value = listcontent;
-  //   } catch (error) {
-  //     console.log(error);
-  //     labelCreateStatus.textContent = "Error" + error;
-  //     labelCreateStatus.setAttribute("role", "alert");
-  //   }
-  // }
-
-  
 
   export function sendDataToFrontEnd(){
     return readDataFromContainer();
@@ -244,6 +163,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       // id: getInteger(thing, SCHEMA_INRUPT.identifier),
       // date: getDatetime(thing, SCHEMA_INRUPT.dateModified),
       // verified: getBoolean(thing, SCHEMA_INRUPT.value),
+      name: getStringNoLocale(thing, SCHEMA_INRUPT.name),
       type: getUrl(thing, RDF.type),
       date_modified: getStringNoLocale(thing, SCHEMA_INRUPT.dateModified),
       temperature: getStringNoLocale(thing, SCHEMA_INRUPT.value),
@@ -265,6 +185,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       const box = document.createElement('div');
       box.className = 'box';
       box.innerHTML = `
+        <h2>${element.name}</h2>
         <p>Type: ${element.type}</p>
         <p>Temperature: ${element.temperature}</p>
         <p>Lat/Long: ${element.lat_long}</p>
