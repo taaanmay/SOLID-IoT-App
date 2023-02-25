@@ -19,7 +19,8 @@ import {
     getUrl,
     removeThing,
     saveSolidDatasetAt,
-    setThing
+    setThing,
+    universalAccess
   } from "@inrupt/solid-client";
   
 import { SCHEMA_INRUPT, RDF, AS, OWL } from "@inrupt/vocab-common-rdf";
@@ -29,38 +30,6 @@ import {
 } from "@inrupt/solid-client-notifications";
 
 const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/Tanker1233";
-
-// ... authentication logic has been omitted
-
-
-// import fastify from 'fastify';
-// const server = fastify({
-//   logger: true
-// });
-
-
-// fastify.listen(1234, (err, address) => {
-//   if (err) throw err;
-// });
-
-// fastify.post('/', async (req, res) => {
-//   try {
-//     if (req.headers['content-type'] === 'application/json') {
-//       const name = req.body.name;
-//       const temperature = req.body.temperature;
-//       console.log(`Name: ${name}, Temperature: ${temperature}`);
-//       res.send({ message: 'Data received' });
-//     } else {
-//       console.log('Request body is not in JSON format');
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send({ error: error });
-//   }
-// });
-
-
-
 
 
   
@@ -86,10 +55,10 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   
     return login({
       oidcIssuer: SELECTED_IDP,
-      // redirectUrl: window.location.href,
-      redirectUrl: "http://localhost:8080/add-device.html",
-      clientName: "Getting started app",
-      restorePreviousSession: true
+      redirectUrl: window.location.href,
+      // redirectUrl: "http://localhost:8080/add-device.html",
+      clientName: "UI of Solid IoT App",
+      // restorePreviousSession: true
     });
   }
   
@@ -103,13 +72,13 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     if(session.info.webId != null){
       console.log("Web ID is not null and it is "+session.info.webId);
     }else{
-      console.log("WEb Id is null.");
-      login({
-        oidcIssuer: "https://solidcommunity.net",
-        redirectUrl: window.location.href,
-        clientName: "Getting started app",
-        restorePreviousSession: true
-      });
+      console.log("WEb Id is null. Attempting to login again automatically.");
+      // login({
+      //   oidcIssuer: "https://solidcommunity.net",
+      //   redirectUrl: window.location.href,
+      //   clientName: "Getting started app",
+      //   restorePreviousSession: true
+      // });
       
     }
 
@@ -148,112 +117,13 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       podOption.value = mypod;
       selectorPod.appendChild(podOption);
     });
-  }
-  
-  // 3. Create the Reading List
-  async function createList() {
-    labelCreateStatus.textContent = "";
-    const SELECTED_POD = document.getElementById("select-pod").value;
-    let SELECTED_TANK = document.getElementById("select-tank").value;
-    SELECTED_TANK = 'tank01';
-  
-    // For simplicity and brevity, this tutorial hardcodes the  SolidDataset URL.
-    // In practice, you should add in your profile a link to this resource
-    // such that applications can follow to find your list.
-    // const readingListUrl = `${SELECTED_POD}getting-started-/reading-List/my-List`;
-    const readingListUrl = `${SELECTED_POD}dosing-data/${SELECTED_TANK}`;
-  
-    //let titles = document.getElementById("titles").value.split("\n");
-    let time = document.getElementById("time").value.split("\n");
-    let temps = document.getElementById("temps").value.split("\n");
-    let latLon = document.getElementById("latLon").value.split("\n");
-  
-    // Fetch or create a new reading list.
-    let myReadingList;
-  
-    try {
-      // Attempt to retrieve the reading list in case it already exists.
-      myReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
-      // Clear the list to override the whole list
-      let items = getThingAll(myReadingList);
-      items.forEach((item) => {
-        myReadingList = removeThing(myReadingList, item);
-      });
-    } catch (error) {
-      if (typeof error.statusCode === "number" && error.statusCode === 404) {
-        // if not found, create a new SolidDataset (i.e., the reading list)
-        myReadingList = createSolidDataset();
-      } else {
-        console.error(error.message);
-      }
-    }
 
-
-    let item = createThing({ name: "temp" + time });
-    item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
-    item = addStringNoLocale(item, SCHEMA_INRUPT.value, temps);
-    item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, time);
-    item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', latLon);
-    item = addStringNoLocale(item,'https://schema.org/creator', session.info.webId);
-    myReadingList = setThing(myReadingList, item);
-
-  
-    // Add titles to the Dataset
-    // let i = 0;
-    // titles.forEach((title) => {
-    //   if (title.trim() !== "") {
-    //     let item = createThing({ name: "title" + i });
-    //     item = addUrl(item, RDF.type, AS.Article);
-    //     item = addStringNoLocale(item, SCHEMA_INRUPT.value, title);
-    //     myReadingList = setThing(myReadingList, item);
-    //     i++;
-    //   }
-    // });
-
-    // let i = 0;
-    // temps.forEach((temp) => {
-    //   if (temp.trim() !== "") {
-    //     let item = createThing({ name: "temp" + i });
-    //     item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
-    //     item = addStringNoLocale(item, SCHEMA_INRUPT.value, temp);
-    //     myReadingList = setThing(myReadingList, item);
-    //     i++;
-    //   }
-    // });
-  
-    try {
-      // Save the SolidDataset
-      let savedReadingList = await saveSolidDatasetAt(
-        readingListUrl,
-        myReadingList,
-        { fetch: fetch }
-      );
-  
-      labelCreateStatus.textContent = "Saved";
-  
-      // Refetch the Reading List
-      savedReadingList = await getSolidDataset(readingListUrl, { fetch: fetch });
-      console.log(savedReadingList);
-  
-      let items = getThingAll(savedReadingList);
-  
-      let listcontent = "";
-      for (let i = 0; i < items.length; i++) {
-        let item = getStringNoLocale(items[i], SCHEMA_INRUPT.name);
-        if (item !== null) {
-          listcontent += item + "\n";
-        }
-      }
-  
-      document.getElementById("savedtitles").value = listcontent;
-    } catch (error) {
-      console.log(error);
-      labelCreateStatus.textContent = "Error" + error;
-      labelCreateStatus.setAttribute("role", "alert");
-    }
+    
   }
 
-  
+  export function sendDataToFrontEnd(){
+    return readDataFromContainer();
+  }
 
 
 
@@ -261,6 +131,8 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     
     let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
     let readContainerUrl = `${SELECTED_POD_TEMP}dosing-data/`;
+
+    //readContainerUrl = `https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`;
 
     let myTanks;
     try {
@@ -280,6 +152,53 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     console.log(items);
     document.getElementById("savedtitles").value = "Hello'";
 
+    
+
+
+    const output = [];
+    const things = getThingAll(myTanks);
+    things.forEach((thing) => {
+    const tempObject = {
+      // text: getStringNoLocale(thing, SCHEMA_INRUPT.text),
+      // id: getInteger(thing, SCHEMA_INRUPT.identifier),
+      // date: getDatetime(thing, SCHEMA_INRUPT.dateModified),
+      // verified: getBoolean(thing, SCHEMA_INRUPT.value),
+      name: getStringNoLocale(thing, SCHEMA_INRUPT.name),
+      type: getUrl(thing, RDF.type),
+      date_modified: getStringNoLocale(thing, SCHEMA_INRUPT.dateModified),
+      temperature: getStringNoLocale(thing, SCHEMA_INRUPT.value),
+      tankManager: getStringNoLocale(thing, 'https://schema.org/creator'),
+      lat_long: getStringNoLocale(thing, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon'),
+      tankID: getStringNoLocale(thing, SCHEMA_INRUPT.productID)
+      
+    };
+    output.push(tempObject);
+  });
+  console.log(output);
+
+  const data = output;
+
+
+  const container = document.getElementById('container');
+                  
+    container.innerHTML = '';
+    data.forEach(element => {
+      const box = document.createElement('div');
+      box.className = 'box';
+      box.innerHTML = `
+        <h2>${element.name}</h2>
+        <p>Tank ID: ${element.tankID}</p>
+        <p>Type: ${element.type}</p>
+        <p>Temperature: ${element.temperature}</p>
+        <p>Lat/Long: ${element.lat_long}</p>
+        <p>Date Modified: ${element.date_modified}</p>
+        <p>Creator: ${element.tankManager}</p>
+      `;
+      container.appendChild(box);
+    });
+
+  return output;
+
 
   }
 
@@ -291,118 +210,197 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
 
     labelCreateStatus.textContent = "";
-    let TANK_NAME = document.getElementById("tank-name").value;
+    let DEVICE_NAME = document.getElementById("tank-name").value;
+    let TANK_ID = document.getElementById("tank-id").value;
     let tankManager = document.getElementById("tank-manager").value.split("\n");
     let tankViewers = document.getElementById("tank-viewers").value.split("\n");
     
+    const createTankUrl = `${SELECTED_POD_TEMP}dosing-data/`;
+
+    // tank manager = web id of the current logged in user
+    tankManager = document.getElementById("myWebID").value;
     
-    const createTankUrl = `${SELECTED_POD_TEMP}dosing-data/${TANK_NAME}`;
+    addDevice(createTankUrl, DEVICE_NAME, tankManager, TANK_ID);
+    
+    
+    
+
+    // Giving Access to SERVER
+    const session = getDefaultSession();
+    var webID = `https://id.inrupt.com/iotserver01`; // Web ID of server  
+    lookupAccess(readContainerUrl, webID, session );  
+    giveAccessToServer(readContainerUrl);
+    lookupAccess(readContainerUrl, webID, session );
+    
+    
   
-    // Fetch or create a new reading list.
-    let myTanks;
+    // // Fetch or create a new reading list.
+    // let myTanks;
   
-    try {
-      // Attempt to retrieve the reading list in case it already exists.
-      myTanks = await getSolidDataset(createTankUrl, { fetch: fetch });
-      // Clear the list to override the whole list
-      let items = getThingAll(myTanks);
-      items.forEach((item) => {
-        myTanks = removeThing(myTanks, item);
-      });
-    } catch (error) {
-      if (typeof error.statusCode === "number" && error.statusCode === 404) {
-        // if not found, create a new SolidDataset (i.e., the reading list)
-        myTanks = createSolidDataset();
-      } else {
-        console.error(error.message);
-      }
-    }
+    // try {
+    //   // Attempt to retrieve the reading list in case it already exists.
+    //   myTanks = await getSolidDataset(createTankUrl, { fetch: fetch });
+    //   // Clear the list to override the whole list
+    //   let items = getThingAll(myTanks);
+    //   items.forEach((item) => {
+    //     myTanks = removeThing(myTanks, item);
+    //   });
+    // } catch (error) {
+    //   if (typeof error.statusCode === "number" && error.statusCode === 404) {
+    //     // if not found, create a new SolidDataset (i.e., the reading list)
+    //     myTanks = createSolidDataset();
+    //   } else {
+    //     console.error(error.message);
+    //   }
+    // }
 
 
 
-    const date = new Date();
-    console.log(date);
+    // const date = new Date();
+    // console.log(date);
 
-    let item = createThing({ name: TANK_NAME });
-    item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
-    item = addStringNoLocale(item, SCHEMA_INRUPT.value, tankManager);
-    item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, date);
-    myTanks = setThing(myTanks, item);
-
-
-    try {
-      // Save the SolidDataset
-      let savedReadingList = await saveSolidDatasetAt(
-        createTankUrl,
-        myTanks,
-        { fetch: fetch }
-      );
-  
-      labelCreateStatus.textContent = "Saved";
-  
-      // Refetch the Reading List
-      savedReadingList = await getSolidDataset(createTankUrl, { fetch: fetch });
-      console.log(savedReadingList);
-  
-      let items = getThingAll(savedReadingList);
-  
-      let listcontent = "";
-      for (let i = 0; i < items.length; i++) {
-       
-       // Access Name from SOLID Pods
-        let item = getStringNoLocale(items[i], SCHEMA_INRUPT.value);
-        console.log("Name = "+item);
-        if (item !== null) {
-          listcontent += item + "\n";
-          //document.getElementById("name").value = item;
-
-          const nameField = document.querySelector('#name');
-          nameField.innerHTML = item;
-        }
-
-        // Access Date Modified from SOLID Pods
-        let dateModifiedData = getStringNoLocale(items[i], SCHEMA_INRUPT.dateModified);
-        console.log("Date Modified = "+dateModifiedData);
-        if (dateModifiedData !== null) {
-          listcontent += dateModifiedData + "\n";
-          const dateModifiedField = document.querySelector('#dateModified');
-          dateModifiedField.innerHTML = dateModifiedData;
-        }
-
-        // Access Type from SOLID Pods
-        let typeData = getUrl(items[i], RDF.type);
-        console.log("Date Modified = "+typeData);
-        if (typeData !== null) {
-          listcontent += typeData + "\n";
-          const typeField = document.querySelector('#type');
-          typeField.innerHTML = typeData;
-        }
+    // let item = createThing({ name: TANK_NAME });
+    // item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
+    // item = addStringNoLocale(item, SCHEMA_INRUPT.value, tankManager);
+    // item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, date);
+    // myTanks = setThing(myTanks, item);
 
 
+    // try {
+    //   // Save the SolidDataset
+    //   let savedReadingList = await saveSolidDatasetAt(
+    //     createTankUrl,
+    //     myTanks,
+    //     { fetch: fetch }
+    //   );
 
+    
 
-
-      }
-  
-      console.log("List Content = "+listcontent);
-      document.getElementById("savedtitles").value = listcontent;
-
-
-
-      const websocket = new WebsocketNotification(
-        containerUrl,
-        { fetch: fetch }
-      );
+    //   const websocket = new WebsocketNotification(
+    //     containerUrl,
+    //     { fetch: fetch }
+    //   );
       
-      websocket.on("message", console.log);
+    //   websocket.on("message", console.log);
       
-      websocket.connect();
-    } catch (error) {
-      console.log(error);
-      labelCreateStatus.textContent = "Error" + error;
-      labelCreateStatus.setAttribute("role", "alert");
-    }
+    //   websocket.connect();
+    // } catch (error) {
+    //   console.log(error);
+    //   labelCreateStatus.textContent = "Error" + error;
+    //   labelCreateStatus.setAttribute("role", "alert");
+    // }
   }
+
+async function lookupAccess(resource, webID, session){
+  
+  universalAccess.getAgentAccess(
+    resource,       // resource  
+    webID,   // agent
+    { fetch: fetch }                      // fetch function from authenticated session
+  ).then((agentAccess) => {
+    logAccessInfo(webID, agentAccess, resource);
+  });
+}  
+
+function logAccessInfo(agent, agentAccess, resource) {
+  console.log(`For resource::: ${resource}`);
+  if (agentAccess === null) {
+    console.log(`Could not load ${agent}'s access details.`);
+  } else {
+    console.log(`${agent}'s Access:: ${JSON.stringify(agentAccess)}`);
+  }
+}
+
+function giveAccessToServer(resource){
+  universalAccess.setAgentAccess(
+    resource,         // Resource
+    `https://id.inrupt.com/iotserver01`,     // Agent
+    { read: false, append: false, write: false, control: false  },          // Access object
+    { fetch: fetch }                         // fetch function from authenticated session
+  ).then((newAccess) => {
+    logAccessInfo2(`https://id.inrupt.com/iotserver01`, newAccess,resource)
+  });
+  
+  
+}
+
+function logAccessInfo2(agent, agentAccess, resource) {
+  console.log(`For resource::: ${resource}`);
+  if (agentAccess === null) {
+    console.log(`Could not load ${agent}'s access details.`);
+  } else {
+    console.log(`${agent}'s Access:: ${JSON.stringify(agentAccess)}`);
+  }
+}
+
+
+async function addDevice(podLocation, id, deviceManager, tankID){
+
+ 
+      let deviceList;
+      
+      try {
+          // Attempt to retrieve the reading list in case it already exists.
+          deviceList = await getSolidDataset(podLocation, 
+          { fetch: fetch });
+          // Clear the list to override the whole list
+          let items = getThingAll(deviceList);
+          items.forEach((item) => {
+              // deviceList = removeThing(deviceList, item);
+          });
+      } catch (error) {
+          if (typeof error.statusCode === "number" && error.statusCode === 404) {
+              // if not found, create a new SolidDataset (i.e., the reading list)
+              deviceList = createSolidDataset();
+          } 
+          else {
+              console.error(error.message);
+          }
+      }
+          
+          var currentdate = new Date(); 
+          var datetime = currentdate.getDate() + "/"
+                          + (currentdate.getMonth()+1)  + "/" 
+                          + currentdate.getFullYear() + " "  
+                          + currentdate.getHours() + ":"  
+                          + currentdate.getMinutes() + ":" 
+                          + currentdate.getSeconds();
+          
+          console.log("Date - "+datetime);                                
+          
+          let item = createThing({
+          name: "Device"+id
+          });
+          item = addStringNoLocale(item, SCHEMA_INRUPT.identifier, id);
+          item = addStringNoLocale(item, SCHEMA_INRUPT.name, "Device-"+id);
+          item = addUrl(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
+          // item = addStringNoLocale(item, SCHEMA_INRUPT.value, temperature);
+          item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, datetime);
+          // item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', (latitude + ", " + longitude));
+          item = addStringNoLocale(item, 'https://schema.org/creator', deviceManager);
+          item = addStringNoLocale(item, SCHEMA_INRUPT.productID, tankID);
+          deviceList = setThing(deviceList, item);
+          
+          
+          try {
+          // Save the SolidDataset
+          let saveDeviceList = await saveSolidDatasetAt(
+              podLocation,
+              deviceList, 
+              { fetch: fetch }
+              );
+              console.log('Saved Data '+ saveDeviceList); 
+              return true; 
+              
+              
+          } catch (error) {
+              console.log("Device Not saved in Solid Pod => ");
+              console.error(error.message);
+              return false;
+
+              
+          }
+}    
   
   buttonLogin.onclick = function () {
     loginToSelectedIdP();
