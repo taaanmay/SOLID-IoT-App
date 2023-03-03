@@ -3,7 +3,8 @@ import {
     login,
     handleIncomingRedirect,
     getDefaultSession,
-    fetch
+    fetch,
+    onSessionRestore
   } from "@inrupt/solid-client-authn-browser";
   
   // Import from "@inrupt/solid-client"
@@ -58,14 +59,17 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       redirectUrl: window.location.href,
       // redirectUrl: "http://localhost:8080/add-device.html",
       clientName: "UI of Solid IoT App",
-      // restorePreviousSession: true
+      restorePreviousSession: true
     });
   }
   
   // 1b. Login Redirect. Call handleIncomingRedirect() function.
   // When redirected after login, finish the process by retrieving session information.
   async function handleRedirectAfterLogin() {
-    await handleIncomingRedirect();
+    
+    
+    await handleIncomingRedirect(); 
+    
   
     const session = getDefaultSession();
 
@@ -73,12 +77,12 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       console.log("Web ID is not null and it is "+session.info.webId);
     }else{
       console.log("WEb Id is null. Attempting to login again automatically.");
-      // login({
-      //   oidcIssuer: "https://solidcommunity.net",
-      //   redirectUrl: window.location.href,
-      //   clientName: "Getting started app",
-      //   restorePreviousSession: true
-      // });
+      login({
+        oidcIssuer: "https://login.inrupt.com",
+        redirectUrl: window.location.href,
+        clientName: "Getting started app",
+        restorePreviousSession: true
+      });
       
     }
 
@@ -197,6 +201,10 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       container.appendChild(box);
     });
 
+
+  // Turning Button Green showing that the results have been generated  
+  document.getElementById("submit-read-tank").className = "btn completed";  
+
   return output;
 
 
@@ -211,26 +219,32 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
 
     labelCreateStatus.textContent = "";
     let DEVICE_NAME = document.getElementById("tank-name").value;
-    let TANK_ID = document.getElementById("tank-id").value;
+    // let TANK_ID = document.getElementById("tank-id").value;
     let tankManager = document.getElementById("tank-manager").value.split("\n");
     let tankViewers = document.getElementById("tank-viewers").value.split("\n");
     
     const createTankUrl = `${SELECTED_POD_TEMP}dosing-data/`;
 
-    // tank manager = web id of the current logged in user
-    tankManager = document.getElementById("myWebID").value;
+    // tank manager = web id of the current logged in user if manager not provided
+    if(tankManager == null){
+      tankManager = document.getElementById("myWebID").value;
+    }  
     
-    addDevice(createTankUrl, DEVICE_NAME, tankManager, TANK_ID);
+    addDevice(createTankUrl, DEVICE_NAME, tankManager);
     
     
     
 
+    var readContainerUrl = `${SELECTED_POD_TEMP}dosing-data/`;
     // Giving Access to SERVER
     const session = getDefaultSession();
     var webID = `https://id.inrupt.com/iotserver01`; // Web ID of server  
     lookupAccess(readContainerUrl, webID, session );  
     giveAccessToServer(readContainerUrl);
     lookupAccess(readContainerUrl, webID, session );
+
+    var submitButton = document.getElementById('submit-tank');
+    submitButton.className ='btn completed';
     
     
   
@@ -315,7 +329,7 @@ function giveAccessToServer(resource){
   universalAccess.setAgentAccess(
     resource,         // Resource
     `https://id.inrupt.com/iotserver01`,     // Agent
-    { read: false, append: false, write: false, control: false  },          // Access object
+    { read: true, append: true, write: true, control: true  },          // Access object
     { fetch: fetch }                         // fetch function from authenticated session
   ).then((newAccess) => {
     logAccessInfo2(`https://id.inrupt.com/iotserver01`, newAccess,resource)
@@ -334,7 +348,7 @@ function logAccessInfo2(agent, agentAccess, resource) {
 }
 
 
-async function addDevice(podLocation, id, deviceManager, tankID){
+async function addDevice(podLocation, id, deviceManager){
 
  
       let deviceList;
@@ -378,7 +392,6 @@ async function addDevice(podLocation, id, deviceManager, tankID){
           item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, datetime);
           // item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', (latitude + ", " + longitude));
           item = addStringNoLocale(item, 'https://schema.org/creator', deviceManager);
-          item = addStringNoLocale(item, SCHEMA_INRUPT.productID, tankID);
           deviceList = setThing(deviceList, item);
           
           

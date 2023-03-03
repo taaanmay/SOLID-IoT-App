@@ -124,6 +124,30 @@
     input[type="submit-tank"]:hover {
       background-color: #45a049;
     }
+
+
+    .btn {
+			background-color: #ddd;
+			border: none;
+			color: white;
+			padding: 16px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			transition-duration: 0.4s;
+			cursor: pointer;
+			border-radius: 10px;
+		}
+
+		.btn.completed {
+			background-color: green;
+		}
+
+		.btn.incomplete {
+			background-color: rgb(233, 27, 27);
+		}
   </style>
   
 </head>
@@ -267,17 +291,20 @@
                     <label for="tank-name">Enter ID for a device:</label><br>
                     <input type="text-tank" id="tank-name" name="tank-name"><br>
 
-                    <label for="tank-id">Enter the ID of the tank:</label><br>
-                    <input type="text-tank" id="tank-id" name="tank-id"><br>
+                    <!-- <label for="tank-id">Enter the ID of the tank:</label><br>
+                    <input type="text-tank" id="tank-id" name="tank-id"><br> -->
 
                     <label for="tank-manager">Tank Manager:</label><br>
-                    <input type="text-tank" id="tank-manager" name="tank-manager"><br>
+                    <input type="text-tank" id="tank-manager" name="tank-manager" placeholder="Enter WebID of Manager"><br>
                     <label for="tank-viewers">Tank Viewers:</label><br>
-                    <input type="text-tank" id="tank-viewers" name="tank-viewers"><br>
+                    <input type="text-tank" id="tank-viewers" name="tank-viewers" placeholder="Enter WebIDs of Viewers seperated by `,`"><br>
                     <!-- <input type="submit-tank" value="Create"> -->
-                    <button name="submit-tank" id="submit-tank">Add New Tank</button>
+                    <button name="submit-tank" id="submit-tank" class="btn incomplete">Add New Tank</button>
 
-                    <button name="submit-read-tank" id="submit-read-tank" style="display:none">Get Devices in Pod</button>
+
+
+
+                    <button name="submit-read-tank" id="submit-read-tank" style="display:none" >Get Devices in Pod</button>
                   
                 </div>
         
