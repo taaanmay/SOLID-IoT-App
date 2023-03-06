@@ -41,7 +41,7 @@
     }
 
     .login-box {
-      width: 800px;
+      width: 1000px;
       background-color: rgb(218, 102, 102);
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -257,7 +257,7 @@
               <br>
               <div class="row">
                 <div>
-                  <label id="podlabel" for="select-pod">a. Write to your Pod: </label>
+                  <label id="podlabel" for="select-pod">You are accessing:  </label>
                   
                   <select id="select-pod" name="select-pod" widths: 120>
                     <option value="">--Please select your Pod--</option>
@@ -306,31 +306,6 @@
   
                 
         
-                <!-- <div id="container"></div>
-
-                <script src="./index.js"></script>
-                <button name="submit-read-tank" id="submit-read-tank" onclick="displayData()">Get Devices in Pod</button>
-                <script>
-                  const container = document.getElementById('container');
-                  function displayData() {
-                    container.innerHTML = '';
-                    const data = sendDataToFrontEnd();
-                    data.forEach(element => {
-                      const box = document.createElement('div');
-                      box.className = 'box';
-                      box.innerHTML = `
-                        <p>Name: ${element.name}</p>
-                        <p>ID: ${element.id}</p>
-                        <p>Temperature: ${element.temp}</p>
-                        <p>Lat/Long: ${element.lat_long}</p>
-                        <p>Date Modified: ${element.date_modified}</p>
-                        <p>Creator: ${element.creator}</p>
-                      `;
-                      container.appendChild(box);
-                    });
-                  }
-                </script> -->
-
 
 
 
@@ -344,79 +319,7 @@
                 </div>
 
                 <div id="container"></div>
-                <!-- <script>
-                  const container = document.getElementById('container');
-                  function displayData() {
-                    container.innerHTML = '';
-                    const data = sendDataToFrontEnd();
-                    data.forEach(element => {
-                      const box = document.createElement('div');
-                      box.className = 'box';
-                      box.innerHTML = `
-                        <p>Name: ${element.name}</p>
-                        <p>ID: ${element.id}</p>
-                        <p>Temperature: ${element.temp}</p>
-                        <p>Lat/Long: ${element.lat_long}</p>
-                        <p>Date Modified: ${element.date_modified}</p>
-                        <p>Creator: ${element.creator}</p>
-                      `;
-                      container.appendChild(box);
-                    });
-                  }
-                </script> -->
                 
-
-
-                <!-- <div id="container"></div>
-                
-                <script>
-                  const data = [
-			{
-				"name": "Element 1",
-				"id": "ID1",
-				"temp": 25,
-				"lat_long": "40.7128,-74.0060",
-				"date_modified": "2022-02-20T15:45:00Z",
-				"creator": "John"
-			},
-			{
-				"name": "Element 2",
-				"id": "ID2",
-				"temp": 28,
-				"lat_long": "51.5074,-0.1278",
-				"date_modified": "2022-02-19T13:30:00Z",
-				"creator": "Jane"
-			},
-			{
-				"name": "Element 3",
-				"id": "ID3",
-				"temp": 20,
-				"lat_long": "35.6895,139.6917",
-				"date_modified": "2022-02-18T11:15:00Z",
-				"creator": "Bob"
-			}
-		];
-                  const container = document.getElementById('container');
-                  data.forEach(element => {
-                    const box = document.createElement('div');
-                    box.className = 'box';
-                    box.innerHTML = `
-                      <p>Name: ${element.name}</p>
-                      <p>ID: ${element.id}</p>
-                      <p>Temperature: ${element.temp}</p>
-                      <p>Lat/Long: ${element.lat_long}</p>
-                      <p>Date Modified: ${element.date_modified}</p>
-                      <p>Creator: ${element.creator}</p>
-                    `;
-                    container.appendChild(box);
-                  });
-                </script>
-         -->
-
-            <!-- <sub href="Submit_Button" input type="button" class="sub" id="btn" value="Submit"
-            onClick="javascript: window.open('dist/index.html', '_self');">
-              Explore
-            </sub> -->
 
           </div>
         </div>

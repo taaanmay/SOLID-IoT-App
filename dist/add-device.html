@@ -145,6 +145,10 @@
 			background-color: green;
 		}
 
+    .btn.failed {
+			background-color: rgb(238, 48, 19);
+		}
+
 		.btn.incomplete {
 			background-color: rgb(233, 27, 27);
 		}
@@ -236,16 +240,16 @@
             
             <div id="read" class="login-box">
               <div class="row">
-                <label id="readlabel" for="myWebID">2. Logged in with your WebID: </label>
+                <label id="readlabel" for="myWebID"> WebID: </label>
                 <input type="text" id="myWebID" name="myWebID" size="50" width="600" disabled>
                 
-                <button name="btnRead" id="btnRead">Get Pod URL(s)</button>
+                <button name="btnRead" id="btnRead">Show Pods </button>
               </div>
             </div>
             
             <div id="write" class="login-box">
               <div class="row">
-                <label id="writelabel">3.Select the Pod URL.</label>
+                <label id="writelabel">Select the Pod</label>
               </div>
               <br>
               <div class="row">
@@ -285,19 +289,24 @@
                 
                 <!-- Add New Tank -->
                 <div id="new-tank" class="new-tank" style="display:show">
-                  <h1>Create a New Device</h1>
+                  <h1>Register a New Device</h1>
                   <!-- <form action="/create-device" method="post"> -->
                   
-                    <label for="tank-name">Enter ID for a device:</label><br>
-                    <input type="text-tank" id="tank-name" name="tank-name"><br>
+                    <label for = "tank-registration-status" id ="tank-registration-status" style="display:none" >Status</label>
+                    <label for="tank-id">Device ID</label><br>
+                    <input type="text-tank" id="tank-id" name="tank-id" placeholder="IMEI Number or any Unique Identifier"><br>
 
-                    <!-- <label for="tank-id">Enter the ID of the tank:</label><br>
-                    <input type="text-tank" id="tank-id" name="tank-id"><br> -->
+                    <label for="tank-nickname">Device Nickname</label><br>
+                    <input type="text-tank" id="tank-nickname" name="tank-nickname" placeholder="(OPTIONAL) Nickname for Device"><br>
+                    
+
+                    <label for="tank-type">Device Type:</label><br>
+                    <input type="text-tank" id="tank-type" name="tank-type" placeholder="(OPTIONAL) Type of Sensor - Proximity, Pressure, Temperature"><br>
 
                     <label for="tank-manager">Tank Manager:</label><br>
-                    <input type="text-tank" id="tank-manager" name="tank-manager" placeholder="Enter WebID of Manager"><br>
+                    <input type="text-tank" id="tank-manager" name="tank-manager" placeholder="(OPTIONAL & DEFAULT - Your WebID) Enter WebID of Manager"><br>
                     <label for="tank-viewers">Tank Viewers:</label><br>
-                    <input type="text-tank" id="tank-viewers" name="tank-viewers" placeholder="Enter WebIDs of Viewers seperated by `,`"><br>
+                    <input type="text-tank" id="tank-viewers" name="tank-viewers" placeholder="(OPTIONAL & DEFAULT - NONE) Enter WebIDs of Viewers seperated by `,`"><br>
                     <!-- <input type="submit-tank" value="Create"> -->
                     <button name="submit-tank" id="submit-tank" class="btn incomplete">Add New Tank</button>
 
