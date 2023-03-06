@@ -231,7 +231,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     let DEVICE_VIEWERS = document.getElementById("tank-viewers").value.split("\n");
 
 
-    console.log("1");
+    
     
     const createTankUrl = `${SELECTED_POD_TEMP}dosing-data/`;
 
@@ -240,9 +240,10 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       DEVICE_MANAGER = document.getElementById("myWebID").value;
     }  
     
-    console.log("2");
+    
     let status = "Device has been Registered";
-    var statusOfAddingDevice = addDevice(createTankUrl, DEVICE_ID, DEVICE_NAME, DEVICE_TYPE, DEVICE_MANAGER, DEVICE_VIEWERS, status);
+    var statusOfAddingDevice = await(addDevice(createTankUrl, DEVICE_ID, DEVICE_NAME, DEVICE_TYPE, DEVICE_MANAGER, DEVICE_VIEWERS, status));
+    console.log("statusOfAddingDevice = "+statusOfAddingDevice);
     
     
     if(statusOfAddingDevice == true){
@@ -328,7 +329,7 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
 
       if(id == null){
         status = "Device ID cannot be empty."
-        console.log("5");
+        console.log(status);
         return false;
         
       }
@@ -364,7 +365,7 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
           
       if(doesDeviceExist == true){
         status = "Device with the same Device ID already exists."
-        console.log("4");
+        console.log(status);
         return false;
       }else{
 
@@ -383,25 +384,24 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
           name: "Device"+id
           });
           item = addStringNoLocale(item, SCHEMA_INRUPT.identifier, id);
-          if(name == null){
+          if(name == null || name == ""){
             item = addStringNoLocale(item, SCHEMA_INRUPT.name, "Device-"+id);
           }else{
             item = addStringNoLocale(item, SCHEMA_INRUPT.name, name);
           }
-          console.log("A");
-          if(type==null){
+          if(type==null || type == ""){
             item = addStringNoLocale(item, RDF.type, 'http://www.w3.org/ns/sosa/Sensor');
           }else{
             item = addStringNoLocale(item, RDF.type, type);
           }
-          console.log("B");
+          
           // item = addStringNoLocale(item, SCHEMA_INRUPT.value, temperature);
           item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, datetime);
           // item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', (latitude + ", " + longitude));
           item = addStringNoLocale(item, 'https://schema.org/creator', deviceManager);
           deviceList = setThing(deviceList, item);
           
-          console.log("5");
+          
           try {
           // Save the SolidDataset
           let saveDeviceList = await saveSolidDatasetAt(
@@ -409,14 +409,11 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
               deviceList, 
               { fetch: fetch }
               );
-              console.log("6");
               console.log('Saved Data '+ saveDeviceList); 
               return true; 
               
               
           } catch (error) {
-
-            console.log("7");
               console.log("Device Not saved in Solid Pod => ");
               console.error(error.message);
               return false;
