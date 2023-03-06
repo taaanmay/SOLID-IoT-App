@@ -158,6 +158,17 @@
 		.btn.incomplete {
 			background-color: rgb(27, 161, 233);
 		}
+
+    .notification {
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			padding: 10px;
+			background-color: rgb(219, 75, 75);
+			border: 1px solid #ccc;
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+			z-index: 1;
+		}
   </style>
   
 </head>
@@ -203,6 +214,7 @@
 <div class="page-heading">
   <h1 class="entry-title">Solid-IoT</h1>
   <h5 style="color: white;">Please Log In to the application using the options below.</h5>
+  <label id="notification-box" style = "display:none" >NEW NOTIFICATION: Data has been modified by an IoT device.</label>
   <!-- <h5 style="color: white;">which was destroyed in the opening engagement of the Civil War on June 30th, 1922.</h5> -->
   
   <ul class="entry-breadcrumb">
@@ -243,6 +255,10 @@
                 <button name="btnLogin" id="btnLogin">Login</button>
               </div>
             </section>
+            
+
+           
+
             
             <div id="read" class="login-box">
               <div class="row">

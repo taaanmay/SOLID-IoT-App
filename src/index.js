@@ -89,6 +89,9 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     if (session.info.isLoggedIn) {
 
       document.getElementById("login").style = "display:none";
+      enableWebsocketNotifications();
+
+
       // Update the page with the status.
       document.getElementById("myWebID").value = session.info.webId;
   
@@ -98,6 +101,40 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     }else{
       document.getElementById("login").style = "display:show";
     }
+
+
+    const sensorContactsUri = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/";  
+
+    const sensorContactsSocket = new WebsocketNotification(
+        sensorContactsUri,
+        { fetch: fetch }
+    )
+  
+    sensorContactsSocket.on("error", (error) => {
+        console.log(error.message);
+    })
+  
+    sensorContactsSocket.on("connected", () => {
+        console.log('connected sensor contacts socket!')
+    })
+  
+    sensorContactsSocket.on("closed", () => {
+        console.log('closed sensor contacts socket!')
+    });
+  
+    // sensorContactsSocket.on("message", async (notif) => {
+    //     console.log(`sensor contacts socket: ${notif}`+notif);   
+    // })
+
+    sensorContactsSocket.on("message", async(notif)=>{
+      console.log();
+      document.getElementById("notification-box").style = "display:show";
+      setTimeout(() => {
+				document.getElementById("notification-box").style = "display:none";
+			}, 5000);
+    })
+  
+    sensorContactsSocket.connect();
   }
   
 
@@ -110,6 +147,25 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   
   
   
+  async function enableWebsocketNotifications(){
+   
+    const session = getDefaultSession();
+    const webID = document.getElementById("myWebID").value;
+    
+    const mypods = await getPodUrlAll(webID, { fetch: fetch });
+    
+    mypods.forEach((mypod) => {
+      const websocket = new WebsocketNotification(
+        mypod+"dosing-data/",
+        { fetch: fetch }
+      );
+      websocket.on("message", console.log);
+
+      websocket.connect();
+    });
+    
+   
+  }
   // 2. Get Pod(s) associated with the WebID
   async function getMyPods() {
     const webID = document.getElementById("myWebID").value;
@@ -136,6 +192,19 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
 
 
   async function readDataFromContainer(){
+
+    const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/";
+
+      // ... authentication logic has been omitted
+
+      const websocket = new WebsocketNotification(
+        containerUrl,
+        { fetch: fetch }
+      );
+
+      websocket.on("Websocket Message", console.log);
+
+      websocket.connect();
     
     let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
     let readContainerUrl = `${SELECTED_POD_TEMP}dosing-data/`;
@@ -220,6 +289,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   // 4. Create a new tank
   async function createNewTank() {
 
+    
     let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
 
     document.getElementById("labelCreateStatus").textContent = "";
@@ -464,6 +534,10 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
       buttonCreate.removeAttribute("disabled");
     }
   }
+
+
+ 
+
 
   
 
