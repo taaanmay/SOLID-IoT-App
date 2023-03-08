@@ -21,7 +21,8 @@ import {
     removeThing,
     saveSolidDatasetAt,
     setThing,
-    universalAccess
+    universalAccess,
+    deleteSolidDataset
   } from "@inrupt/solid-client";
   
 import { SCHEMA_INRUPT, RDF, AS, OWL } from "@inrupt/vocab-common-rdf";
@@ -37,15 +38,17 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   const selectorIdP = document.querySelector("#select-idp");
   const selectorPod = document.querySelector("#select-pod");
   const buttonLogin = document.querySelector("#btnLogin");
-  const buttonRead = document.querySelector("#btnRead");
+  // const buttonRead = document.querySelector("#btnRead");
   const buttonCreate = document.querySelector("#btnCreate");
   const labelCreateStatus = document.querySelector("#labelCreateStatus");
 
   const buttonCreateNewTank = document.querySelector("#submit-tank");
   const buttonReadDataFromContainer = document.querySelector("#submit-read-tank");
+
+  const deleteDevicesButton = document.querySelector("#delete-devices-button");
   
   
-  buttonRead.setAttribute("disabled", "disabled");
+  // buttonRead.setAttribute("disabled", "disabled");
   buttonLogin.setAttribute("disabled", "disabled");
   buttonCreate.setAttribute("disabled", "disabled");
   
@@ -96,7 +99,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       document.getElementById("myWebID").value = session.info.webId;
   
       // Enable Read button to read Pod URL
-      buttonRead.removeAttribute("disabled");
+      // buttonRead.removeAttribute("disabled");
       console.log("WebID = "+session.info.webId);
     }else{
       document.getElementById("login").style = "display:show";
@@ -125,6 +128,12 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     // sensorContactsSocket.on("message", async (notif) => {
     //     console.log(`sensor contacts socket: ${notif}`+notif);   
     // })
+
+
+    // Show the List of Pods
+    getMyPods();
+    
+
 
     sensorContactsSocket.on("message", async(notif)=>{
       console.log();
@@ -169,6 +178,9 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   // 2. Get Pod(s) associated with the WebID
   async function getMyPods() {
     const webID = document.getElementById("myWebID").value;
+
+    document.getElementById("readlabel").textContent = "My WebID: "+webID;
+    
     
     const mypods = await getPodUrlAll(webID, { fetch: fetch });
     
@@ -220,6 +232,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       if (typeof error.statusCode === "number" && error.statusCode === 404) {
         // if not found, create a new SolidDataset (i.e., the reading list)
         console.log("Nothing found at the location "+ readContainerUrl);
+        destroy();
       } else {
         console.error(error.message);
       }
@@ -494,13 +507,48 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
       
 }    
   
+
+
+async function deleteAllDevices(){
+  let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
+  const podLocation = `${SELECTED_POD_TEMP}dosing-data/`;
+  try {
+    await deleteSolidDataset(
+      podLocation, 
+      { fetch: fetch }           // fetch function from authenticated session
+    );
+  } catch (error) {
+    
+    if (typeof error.statusCode === "number" && error.statusCode === 404) {
+        // if not found, create a new SolidDataset (i.e., the reading list)
+      console.log("No device in SOLID")
+    } 
+    else {
+        console.error(error.message);
+    }
+}
+}
+
+function destroy(){
+
+  var olddata=document.getElementById("container").lastChild;
+  document.getElementById("container").removeChild(olddata);
+  
+  }
+
+
   buttonLogin.onclick = function () {
     loginToSelectedIdP();
   };
-  
-  buttonRead.onclick = function () {
-    getMyPods();
+
+  deleteDevicesButton.onclick = function () {
+    console.log("Delete all devices from the Pod");
+    deleteAllDevices();
   };
+  
+  // buttonRead.onclick = function () {
+  //   getMyPods();
+  // };
   
   buttonCreate.onclick = function () {
     createList();

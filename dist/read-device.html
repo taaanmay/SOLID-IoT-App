@@ -166,7 +166,7 @@
       <div class="row">
         <div class="col-md-2 fix-logo">
           <div class="wrapper-logo">
-            <a href="dist/index.html" class="logo-default"><img src="pic/beyondLogo-1.png" alt="beyondLogo-1" /></a>
+            <a href="index.html" class="logo-default"><img src="pic/SOLID-Play-White.png" alt="beyondLogo-1" /></a>
           </div>
         </div>
         <div class="col-md-4 col-md-push-6 fix-social">
@@ -180,11 +180,11 @@
               <ul class="nav-bar">
                  <li><a href="index.html">Home</a>
                 </li>
-                <li><a href="add-device.html">Add Device</a>
+                <li><a href="add-device.html">Register Device</a>
                 </li>
-                <li><a href="read-device.html">Read Device</a>
+                <li><a href="read-device.html">My Devices</a>
                 </li>
-                <li><a href="update-device.html">Update Device</a>
+                <li><a href="update-device.html">Modify Device Access</a>
                 </li>
                 <!-- <li><a href="slider.html">Find by Years</a>
                 </li> -->
@@ -199,8 +199,9 @@
 </header>
 
 <div class="page-heading">
-  <h1 class="entry-title">Solid-IoT</h1>
-  <h5 style="color: white;">You can access the devices that are accissbile to you on the basis of your role and permission</h5>
+  <h1 class="entry-title">SOLID Play</h1>
+  <h5 style="color: white;">A Plug-and-Play Application for IoT devices built using the SOLID Initative.</h5>
+  <label id="notification-box" style = "display:none" >NEW NOTIFICATION: Data has been modified by an IoT device.</label>
   <!-- <h5 style="color: white;">which was destroyed in the opening engagement of the Civil War on June 30th, 1922.</h5> -->
   
   <ul class="entry-breadcrumb">
@@ -241,28 +242,22 @@
               </div>
             </section>
             
-            <div id="read" class="login-box">
+            <div id="read" class="login-box"style="display: none;">
               <div class="row">
-                <label id="readlabel" for="myWebID">2. Logged in with your WebID: </label>
-                <input type="text" id="myWebID" name="myWebID" size="50" width="600" disabled>
+                <!-- <label id="readlabel" for="myWebID" size="50" width="600"  > My WebID: </label> -->
+                <input type="text" id="myWebID" name="myWebID" size="50" width="600" disabled style="display: none;">
                 
-                <button name="btnRead" id="btnRead">Get Pod URL(s)</button>
+                <!-- <button class=".btn" name="btnRead" id="btnRead">Show Pods </button> -->
               </div>
             </div>
             
             <div id="write" class="login-box">
               <div class="row">
-                <label id="writelabel">3.Select the Pod URL.</label>
-              </div>
-              <br>
-              <div class="row">
-                <div>
-                  <label id="podlabel" for="select-pod">You are accessing:  </label>
-                  
-                  <select id="select-pod" name="select-pod" widths: 120>
-                    <option value="">--Please select your Pod--</option>
-                  </select>dosing-data/
-                </div>
+                <label id="readlabel" for="myWebID" size="50" width="600"  > My WebID: </label>
+                <label id="writelabel">SELECT POD </label>
+                <select id="select-pod" name="select-pod" widths: 120>
+                  <option value="">--Please select your Pod--</option>
+                </select>dosing-data/
               </div>
               <br>
               <div class="row">
@@ -290,15 +285,7 @@
                 
                 <!-- Add New Tank -->
                 <div id="new-tank" class="new-tank" style="display:show">
-                  <!-- <h1>Create a New Device</h1>
-                  
-                  
-                    <label for="tank-name">Name:</label><br>
-                    <input type="text-tank" id="tank-name" name="tank-name"><br>
-                    <label for="tank-manager">Tank Manager:</label><br>
-                    <input type="text-tank" id="tank-manager" name="tank-manager"><br>
-                    <label for="tank-viewers">Tank Viewers:</label><br>
-                    <input type="text-tank" id="tank-viewers" name="tank-viewers"><br> -->
+                 
                     
                     <button name="submit-tank" id="submit-tank" style="display:none">Add New Tank</button>
                   
@@ -318,7 +305,10 @@
                   </div>
                 </div>
 
+                <button name="delete-devices-button" id="delete-devices-button" class = "btn">Delete All Devices</button>
+
                 <div id="container"></div>
+
                 
 
           </div>

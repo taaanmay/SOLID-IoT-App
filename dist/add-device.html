@@ -34,8 +34,8 @@
   <style>
     
     :root {
-      --primary-color: rgb(50, 102, 168);
-      --secondary-color: rgb(81, 135, 252);
+      --primary-color: rgb(146, 169, 28);
+      --secondary-color: rgb(242, 244, 151);
     }
     
     .login-box {
@@ -110,7 +110,16 @@
       margin: 0 auto;
       text-align: center;
     }
-    input[type="text-tank"], input[type="number-tank"] {
+    input[type="text"] {
+      color: white;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 8px 0;
+      padding: 12px 20px;
+    }
+    input[type="text-tank"], input[type="number-tank"]{
       width: 100%;
       box-sizing: border-box;
       border: 1px solid #ccc;
@@ -156,9 +165,10 @@
 		}
 
 		.btn.incomplete {
-			background-color: rgb(27, 161, 233);
+			background-color: rgb(205, 237, 21);
 		}
 
+    
     .notification {
 			position: fixed;
 			top: 10px;
@@ -179,7 +189,7 @@
       <div class="row">
         <div class="col-md-2 fix-logo">
           <div class="wrapper-logo">
-            <a href="index.html" class="logo-default"><img src="pic/beyondLogo-1.png" alt="beyondLogo-1" /></a>
+            <a href="index.html" class="logo-default"><img src="pic/SOLID-Play-White.png" alt="beyondLogo-1" /></a>
           </div>
         </div>
         <div class="col-md-4 col-md-push-6 fix-social">
@@ -193,11 +203,11 @@
               <ul class="nav-bar">
                  <li><a href="index.html">Home</a>
                 </li>
-                <li><a href="add-device.html">Add Device</a>
+                <li><a href="add-device.html">Register Device</a>
                 </li>
-                <li><a href="read-device.html">Read Device</a>
+                <li><a href="read-device.html">My Devices</a>
                 </li>
-                <li><a href="update-device.html">Update Device</a>
+                <li><a href="update-device.html">Modify Device Access</a>
                 </li>
                 <!-- <li><a href="slider.html">Find by Years</a>
                 </li> -->
@@ -212,8 +222,8 @@
 </header>
 
 <div class="page-heading">
-  <h1 class="entry-title">Solid-IoT</h1>
-  <h5 style="color: white;">Please Log In to the application using the options below.</h5>
+  <h1 class="entry-title">SOLID Play</h1>
+  <h5 style="color: white;">A Plug-and-Play Application for IoT devices built using the SOLID Initative.</h5>
   <label id="notification-box" style = "display:none" >NEW NOTIFICATION: Data has been modified by an IoT device.</label>
   <!-- <h5 style="color: white;">which was destroyed in the opening engagement of the Civil War on June 30th, 1922.</h5> -->
   
@@ -260,27 +270,30 @@
            
 
             
-            <div id="read" class="login-box">
+            <!-- Web ID and Button -->
+            <div id="read" class="login-box"style="display: none;">
               <div class="row">
-                <label id="readlabel" for="myWebID"> WebID: </label>
-                <input type="text" id="myWebID" name="myWebID" size="50" width="600" disabled>
+                <!-- <label id="readlabel" for="myWebID" size="50" width="600"  > My WebID: </label> -->
+                <input type="text" id="myWebID" name="myWebID" size="50" width="600" disabled style="display: none;">
                 
-                <button name="btnRead" id="btnRead">Show Pods </button>
+                <!-- <button class=".btn" name="btnRead" id="btnRead">Show Pods </button> -->
               </div>
             </div>
             
             <div id="write" class="login-box">
               <div class="row">
-                <label id="writelabel">Select the Pod</label>
+                <label id="readlabel" for="myWebID" size="50" width="600"  > My WebID: </label>
+                <label id="writelabel">SELECT POD </label>
+                <select id="select-pod" name="select-pod" widths: 120>
+                  <option value="">--Please select your Pod--</option>
+                </select>dosing-data/
               </div>
               <br>
               <div class="row">
                 <div>
-                  <label id="podlabel" for="select-pod">a. Write to your Pod: </label>
                   
-                  <select id="select-pod" name="select-pod" widths: 120>
-                    <option value="">--Please select your Pod--</option>
-                  </select>dosing-data/
+                  
+                  
                 </div>
               </div>
               <br>
@@ -325,9 +338,9 @@
                     <label for="tank-type">Device Type:</label><br>
                     <input type="text-tank" id="tank-type" name="tank-type" placeholder="(OPTIONAL) Type of Sensor - Proximity, Pressure, Temperature"><br>
 
-                    <label for="tank-manager">Tank Manager:</label><br>
-                    <input type="text-tank" id="tank-manager" name="tank-manager" placeholder="(OPTIONAL & DEFAULT - Your WebID) Enter WebID of Manager"><br>
-                    <label for="tank-viewers">Tank Viewers:</label><br>
+                    <label for="tank-manager">Device Owner:</label><br>
+                    <input type="text-tank" id="tank-manager" name="tank-manager" placeholder="(OPTIONAL & DEFAULT - Your WebID) Enter WebID of Owner"><br>
+                    <label for="tank-viewers">Viewers:</label><br>
                     <input type="text-tank" id="tank-viewers" name="tank-viewers" placeholder="(OPTIONAL & DEFAULT - NONE) Enter WebIDs of Viewers seperated by `,`"><br>
                     <!-- <input type="submit-tank" value="Create"> -->
                     <button name="submit-tank" id="submit-tank" class="btn incomplete">Add New Tank</button>
@@ -336,6 +349,7 @@
 
 
                     <button name="submit-read-tank" id="submit-read-tank" style="display:none" >Get Devices in Pod</button>
+                    <button name="delete-devices-button" id="delete-devices-button" class = "btn" style="display: none;">Delete All Devices</button>
                   
                 </div>
         
