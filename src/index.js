@@ -46,6 +46,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
   const buttonReadDataFromContainer = document.querySelector("#submit-read-tank");
 
   const deleteDevicesButton = document.querySelector("#delete-devices-button");
+  const searchButton = document.querySelector("#search-input");
   
   
   // buttonRead.setAttribute("disabled", "disabled");
@@ -233,6 +234,20 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
         // if not found, create a new SolidDataset (i.e., the reading list)
         console.log("Nothing found at the location "+ readContainerUrl);
         destroy();
+
+        const container = document.getElementById('container');
+                  
+        container.innerHTML = '';
+        
+        
+          const box = document.createElement('div');
+          box.className = 'box';
+          box.innerHTML = `
+            <h2>NO Devices in your Pod</h2>
+          `;
+
+          console.log("No Devices in your pod");
+    
       } else {
         console.error(error.message);
       }
@@ -287,6 +302,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       `;
       container.appendChild(box);
     });
+
 
 
   // Turning Button Green showing that the results have been generated  
@@ -536,6 +552,80 @@ function destroy(){
   
   }
 
+async function searchForDevice(){
+  const deviceToSearch = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/"
+
+    let readContainerUrl = deviceToSearch;
+
+      //readContainerUrl = `https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/`;
+
+      let myTanks;
+      try {
+        // Attempt to retrieve the reading list in case it already exists.
+        myTanks = await getSolidDataset(readContainerUrl, { fetch: fetch });
+        
+      } catch (error) {
+        if (typeof error.statusCode === "number" && error.statusCode === 404) {
+          console.log("123");
+      
+        } else {
+          console.error(error.message);
+        }
+      }
+      let items = getThingAll(myTanks);
+      console.log(myTanks);
+      console.log(items);
+      
+
+      
+
+
+      const output = [];
+      const things = getThingAll(myTanks);
+      things.forEach((thing) => {
+      const tempObject = {
+        // text: getStringNoLocale(thing, SCHEMA_INRUPT.text),
+        // id: getInteger(thing, SCHEMA_INRUPT.identifier),
+        // date: getDatetime(thing, SCHEMA_INRUPT.dateModified),
+        value: getStringNoLocale(thing, SCHEMA_INRUPT.value),
+        name: getStringNoLocale(thing, SCHEMA_INRUPT.name),
+        date_modified: getStringNoLocale(thing, SCHEMA_INRUPT.dateModified),
+        type: getStringNoLocale(thing, RDF.type),
+        tankManager: getStringNoLocale(thing, 'https://schema.org/creator'),
+        lat_long: getStringNoLocale(thing, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon'),
+        DeviceID: getStringNoLocale(thing, SCHEMA_INRUPT.identifier),
+        
+      };
+      output.push(tempObject);
+    });
+    console.log(output);
+
+    const data = output;
+
+
+    const container = document.getElementById('container');
+    container.style = "display:show";
+                    
+      container.innerHTML = '';
+      data.forEach(element => {
+        const box = document.createElement('div');
+        box.className = 'box';
+        box.innerHTML = `
+          <h2>${element.name}</h2>
+          <h3>Admin Data</h3>
+          <p>Device ID: ${element.DeviceID}</p>
+          <p>Device Type: ${element.type}</p>
+          <p>Creator: ${element.tankManager}</p>
+          <h3>Device Data</h3>
+          <p>Value: ${element.value}</p>
+          <p>Lat/Long: ${element.lat_long}</p>
+          <p>Date Modified: ${element.date_modified}</p>
+        `;
+        container.appendChild(box);
+      });
+      
+
+}
 
   buttonLogin.onclick = function () {
     loginToSelectedIdP();
@@ -544,6 +634,11 @@ function destroy(){
   deleteDevicesButton.onclick = function () {
     console.log("Delete all devices from the Pod");
     deleteAllDevices();
+  };
+
+  searchButton.onclick = function () {
+    console.log("Pressed Search Button");
+    searchForDevice();
   };
   
   // buttonRead.onclick = function () {
