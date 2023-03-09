@@ -301,6 +301,9 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
 
   // Turning Button Green showing that the results have been generated  
   document.getElementById("submit-read-tank").className = "btn completed";  
+  
+  ///////////////////// LOGIC For EDIT BUTTON ON DEVICES ////////////////
+  
   const editButtons = document.getElementsByClassName("edit-button");
 
   // Loop through each edit button and add a click event listener
@@ -308,6 +311,36 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     editButton.addEventListener("click", () => {
       const buttonId = editButton.id;
       console.log("Edit button clicked with ID: " + buttonId);
+      // Remove "edit-button-" prefix from the ID
+      const deviceId = buttonId.substring("edit-button-".length);
+      console.log(deviceId);
+
+      // Create the prompt message
+      const message = "Device " + deviceId + "\nEnter new Manager:";
+      const manager = prompt(message, "");
+      if (manager === null) {
+        // User clicked Cancel, do nothing
+        return;
+      }
+
+      const viewers = prompt("Enter new Viewers:", "");
+
+      if (viewers === null) {
+        // User clicked Cancel, do nothing
+        return;
+      }
+
+      // Create the confirmation message
+      const confirmationMessage = "Save changes to Device " + deviceId + "?";
+      if (confirm(confirmationMessage)) {
+        // User clicked OK, save the changes
+        console.log("New Manager:", manager);
+        console.log("New Viewers:", viewers);
+        // Code to save the changes goes here
+      } else {
+        // User clicked Cancel, do nothing
+      }
+
     });
   });
 
