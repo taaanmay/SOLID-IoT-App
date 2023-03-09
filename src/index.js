@@ -315,31 +315,48 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
       const deviceId = buttonId.substring("edit-button-".length);
       console.log(deviceId);
 
-      // Create the prompt message
-      const message = "Device " + deviceId + "\nEnter new Manager:";
-      const manager = prompt(message, "");
-      if (manager === null) {
-        // User clicked Cancel, do nothing
-        return;
-      }
+     // Get the pop-up form element
+      const popupForm = document.getElementById("popup-form");
 
-      const viewers = prompt("Enter new Viewers:", "");
+      // Get the form elements for Manager and Viewers
+      const managerInput = popupForm.querySelector("#manager-input");
+      const viewersInput = popupForm.querySelector("#viewers-input");
 
-      if (viewers === null) {
-        // User clicked Cancel, do nothing
-        return;
-      }
+      // Set the current values of Manager and Viewers as the default values in the input fields
+      const currentItem = data.items.find(item => item.name === "Item " + deviceId);
+      managerInput.value = currentItem.manager;
+      viewersInput.value = currentItem.viewers;
 
-      // Create the confirmation message
-      const confirmationMessage = "Save changes to Device " + deviceId + "?";
-      if (confirm(confirmationMessage)) {
-        // User clicked OK, save the changes
-        console.log("New Manager:", manager);
-        console.log("New Viewers:", viewers);
-        // Code to save the changes goes here
-      } else {
-        // User clicked Cancel, do nothing
-      }
+      // Show the pop-up form
+      popupForm.classList.add("visible");
+
+      // Add a click event listener to the Save button
+      const saveButton = popupForm.querySelector("#save-button");
+      saveButton.addEventListener("click", () => {
+        // Get the new values of Manager and Viewers from the input fields
+        const newManager = managerInput.value;
+        const newViewers = viewersInput.value;
+
+        // Update the item in the data object
+        const itemIndex = data.items.findIndex(item => item.name === "Item " + deviceId);
+        data.items[itemIndex].manager = newManager;
+        data.items[itemIndex].viewers = newViewers;
+
+        // Update the item div in the HTML document
+        const itemDiv = document.getElementById("item-" + deviceId);
+        itemDiv.querySelector(".manager").textContent = newManager;
+        itemDiv.querySelector(".viewers").textContent = newViewers;
+
+        // Hide the pop-up form
+        popupForm.classList.remove("visible");
+      });
+
+      // Add a click event listener to the Cancel button
+      const cancelButton = popupForm.querySelector("#cancel-button");
+      cancelButton.addEventListener("click", () => {
+        // Hide the pop-up form
+        popupForm.classList.remove("visible");
+      });
 
     });
   });
