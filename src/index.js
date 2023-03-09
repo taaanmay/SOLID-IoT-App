@@ -274,6 +274,7 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
     data.forEach(element => {
       const box = document.createElement('div');
       box.className = 'box';
+      
       box.innerHTML = `
         <h2>${element.name}</h2>
         <h3>Admin Data</h3>
@@ -285,12 +286,30 @@ const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a
         <p>Lat/Long: ${element.lat_long}</p>
         <p>Date Modified: ${element.date_modified}</p>
       `;
+
+      // Add edit button to the div with a unique ID
+      const editButton = document.createElement("button");
+      editButton.textContent = "Edit";
+      editButton.className = "edit-button"; // Add class name
+      editButton.id = "edit-button-" + element.DeviceID;
+      box.appendChild(editButton);
+
       container.appendChild(box);
+      
     });
 
 
   // Turning Button Green showing that the results have been generated  
   document.getElementById("submit-read-tank").className = "btn completed";  
+  const editButtons = document.getElementsByClassName("edit-button");
+
+  // Loop through each edit button and add a click event listener
+  Array.from(editButtons).forEach(editButton => {
+    editButton.addEventListener("click", () => {
+      const buttonId = editButton.id;
+      console.log("Edit button clicked with ID: " + buttonId);
+    });
+  });
 
   return output;
 
