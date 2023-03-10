@@ -453,20 +453,31 @@ universalAccess.setAgentAccess(
   { read: true, append: true, write: true, control: true  },          // Access object
   { fetch: fetch }                         // fetch function from authenticated session
 ).then((newAccess) => {
-  logAccessInfo2(`https://id.inrupt.com/iotserver01`, newAccess,resource)
+  logAccessInfo(`https://id.inrupt.com/iotserver01`, newAccess,resource)
 });
-
-
 }
 
-function logAccessInfo2(agent, agentAccess, resource) {
-console.log(`For resource::: ${resource}`);
-if (agentAccess === null) {
-  console.log(`Could not load ${agent}'s access details.`);
-} else {
-  console.log(`${agent}'s Access:: ${JSON.stringify(agentAccess)}`);
-}
-}
+function giveFullAccess(resource, webId){
+  universalAccess.setAgentAccess(
+    resource,         // Resource
+    webId,     // Agent
+    { read: true, append: true, write: true, control: true  },          // Access object
+    { fetch: fetch }                         // fetch function from authenticated session
+  ).then((newAccess) => {
+    logAccessInfo(webId, newAccess,resource)
+  });
+  }
+
+function giveReadAccess(resource, webId){
+  universalAccess.setAgentAccess(
+    resource,         // Resource
+    webId,     // Agent
+    { read: true, append: false, write: false, control: false  },          // Access object
+    { fetch: fetch }                         // fetch function from authenticated session
+  ).then((newAccess) => {
+    logAccessInfo(webId, newAccess,resource)
+  });
+  }
 
 
 
@@ -518,6 +529,7 @@ async function addManagerViewers(podLocation, deviceId, manager, viewers){
       if(manager != null && manager != "" && manager.length !=0){
         item = addStringNoLocale(item, 'https://schema.org/creator', manager);
         console.log("Changed Manager");
+        giveFullAccess(podLocation, manager);
       }else{
         var existingManager = getStringNoLocale(thing, 'https://schema.org/creator');
         item = addStringNoLocale(item, `https://schema.org/creator`, existingManager);
@@ -528,7 +540,14 @@ async function addManagerViewers(podLocation, deviceId, manager, viewers){
         // Array.from(viewers).forEach(viewer => {
         //   item = addStringNoLocale(item, 'https://schema.org/viewer'+index, viewer);        
         // });
-        item = addStringNoLocale(item, 'https://schema.org/viewer', viewers);        
+        item = addStringNoLocale(item, 'https://schema.org/viewer', viewers);
+        const viewerList = viewers.split(", ");
+        // Loop through each user in the array and call the giveReadAccess function
+        for (let i = 0; i < viewerList.length; i++) {
+          const viewer = viewerList[i];
+          giveReadAccess(podLocation, viewer);
+        }
+                
         console.log("Viewers Added = "+viewers);
       }else{
           var existingViewer = getStringNoLocale(thing, 'https://schema.org/viewer');
