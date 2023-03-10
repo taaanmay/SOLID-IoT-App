@@ -646,6 +646,7 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
         item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, datetime);
         // item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', (latitude + ", " + longitude));
         item = addStringNoLocale(item, 'https://schema.org/creator', deviceManager);
+        item = addStringNoLocale(item, 'https://schema.org/viewer', viewers);
         deviceList = setThing(deviceList, item);
         
         
