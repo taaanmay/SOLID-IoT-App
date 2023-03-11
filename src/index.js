@@ -47,6 +47,9 @@ const buttonCreateNewTank = document.querySelector("#submit-tank");
 const buttonReadDataFromContainer = document.querySelector("#submit-read-tank");
 
 const deleteDevicesButton = document.querySelector("#delete-devices-button");
+const searchButton = document.querySelector("#searchButton1");
+
+
 
 
 // buttonRead.setAttribute("disabled", "disabled");
@@ -450,20 +453,31 @@ universalAccess.setAgentAccess(
   { read: true, append: true, write: true, control: true  },          // Access object
   { fetch: fetch }                         // fetch function from authenticated session
 ).then((newAccess) => {
-  logAccessInfo2(`https://id.inrupt.com/iotserver01`, newAccess,resource)
+  logAccessInfo(`https://id.inrupt.com/iotserver01`, newAccess,resource)
 });
-
-
 }
 
-function logAccessInfo2(agent, agentAccess, resource) {
-console.log(`For resource::: ${resource}`);
-if (agentAccess === null) {
-  console.log(`Could not load ${agent}'s access details.`);
-} else {
-  console.log(`${agent}'s Access:: ${JSON.stringify(agentAccess)}`);
-}
-}
+function giveFullAccess(resource, webId){
+  universalAccess.setAgentAccess(
+    resource,         // Resource
+    webId,     // Agent
+    { read: true, append: true, write: true, control: true  },          // Access object
+    { fetch: fetch }                         // fetch function from authenticated session
+  ).then((newAccess) => {
+    logAccessInfo(webId, newAccess,resource)
+  });
+  }
+
+function giveReadAccess(resource, webId){
+  universalAccess.setAgentAccess(
+    resource,         // Resource
+    webId,     // Agent
+    { read: true, append: false, write: false, control: false  },          // Access object
+    { fetch: fetch }                         // fetch function from authenticated session
+  ).then((newAccess) => {
+    logAccessInfo(webId, newAccess,resource)
+  });
+  }
 
 
 
@@ -515,6 +529,7 @@ async function addManagerViewers(podLocation, deviceId, manager, viewers){
       if(manager != null && manager != "" && manager.length !=0){
         item = addStringNoLocale(item, 'https://schema.org/creator', manager);
         console.log("Changed Manager");
+        giveFullAccess(podLocation, manager);
       }else{
         var existingManager = getStringNoLocale(thing, 'https://schema.org/creator');
         item = addStringNoLocale(item, `https://schema.org/creator`, existingManager);
@@ -525,7 +540,14 @@ async function addManagerViewers(podLocation, deviceId, manager, viewers){
         // Array.from(viewers).forEach(viewer => {
         //   item = addStringNoLocale(item, 'https://schema.org/viewer'+index, viewer);        
         // });
-        item = addStringNoLocale(item, 'https://schema.org/viewer', viewers);        
+        item = addStringNoLocale(item, 'https://schema.org/viewer', viewers);
+        const viewerList = viewers.split(", ");
+        // Loop through each user in the array and call the giveReadAccess function
+        for (let i = 0; i < viewerList.length; i++) {
+          const viewer = viewerList[i];
+          giveReadAccess(podLocation, viewer);
+        }
+                
         console.log("Viewers Added = "+viewers);
       }else{
           var existingViewer = getStringNoLocale(thing, 'https://schema.org/viewer');
@@ -674,6 +696,95 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
 
 
 
+
+async function searchDevice(deviceLocation){
+  let readContainerUrl =  deviceLocation;
+
+    // ... authentication logic has been omitted
+
+    const websocket = new WebsocketNotification(
+      containerUrl,
+      { fetch: fetch }
+    );
+
+    websocket.on("Websocket Message", console.log);
+
+    websocket.connect();
+
+  let myTanks;
+  try {
+    // Attempt to retrieve the reading list in case it already exists.
+    myTanks = await getSolidDataset(readContainerUrl, { fetch: fetch });
+    
+  } catch (error) {
+    if (typeof error.statusCode === "number" && error.statusCode === 404) {
+      // if not found, create a new SolidDataset (i.e., the reading list)
+      console.log("Nothing found at the location "+ readContainerUrl);
+      destroy();
+    } else {
+      console.error(error.message);
+    }
+  }
+
+    let items = getThingAll(myTanks);
+    console.log(myTanks);
+    console.log(items);
+
+    const output = [];
+    const thing = getThing(myTanks,readContainerUrl);
+    console.log(thing);
+    // things.forEach((thing) => {
+    const tempObject = {
+      // text: getStringNoLocale(thing, SCHEMA_INRUPT.text),
+      // id: getInteger(thing, SCHEMA_INRUPT.identifier),
+      // date: getDatetime(thing, SCHEMA_INRUPT.dateModified),
+      value: getStringNoLocale(thing, SCHEMA_INRUPT.value),
+      name: getStringNoLocale(thing, SCHEMA_INRUPT.name),
+      date_modified: getStringNoLocale(thing, SCHEMA_INRUPT.dateModified),
+      type: getStringNoLocale(thing, RDF.type),
+      tankManager: getStringNoLocale(thing, 'https://schema.org/creator'),
+      lat_long: getStringNoLocale(thing, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon'),
+      DeviceID: getStringNoLocale(thing, SCHEMA_INRUPT.identifier),
+      tankViewers: getStringNoLocale(thing, 'https://schema.org/viewer')
+      
+    };
+    output.push(tempObject);
+  // });
+  console.log(output);
+  const data = output;
+  const container = document.getElementById('container');
+                  
+    container.innerHTML = '';
+    data.forEach(element => {
+      const box = document.createElement('div');
+      box.className = 'box';
+      
+      box.innerHTML = `
+        <h2>${element.name}</h2>
+        <h3>Admin Data</h3>
+        <p>Device ID: ${element.DeviceID}</p>
+        <p>Device Type: ${element.type}</p>
+        <p>Manager: ${element.tankManager}</p>
+        <p>Viewers: ${element.tankViewers}</p>
+        <h3>Device Data</h3>
+        <p>Value: ${element.value}</p>
+        <p>Lat/Long: ${element.lat_long}</p>
+        <p>Date Modified: ${element.date_modified}</p>
+      `;
+
+      // Add edit button to the div with a unique ID
+      const editButton = document.createElement("button");
+      editButton.textContent = "Edit";
+      editButton.className = "edit-button"; // Add class name
+      editButton.id = "edit-button-" + element.DeviceID;
+      box.appendChild(editButton);
+
+      container.appendChild(box);
+      
+    });
+}
+
+
 async function deleteAllDevices(){
 let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
 const podLocation = `${SELECTED_POD_TEMP}dosing-data/`;
@@ -711,6 +822,16 @@ deleteDevicesButton.onclick = function () {
   deleteAllDevices();
 };
 
+
+
+searchButton.onclick = function () {
+  console.log("Search Button Pressed to Lookup a Device");
+  var deviceLocation = document.getElementById("searchInput").value;
+  if(deviceLocation.length ===0){
+    document.getElementById("searchInput").placeholder = "This cannot be empty. Please Type URI of a device."
+  }
+  searchDevice(deviceLocation);
+};
 // buttonRead.onclick = function () {
 //   getMyPods();
 // };
