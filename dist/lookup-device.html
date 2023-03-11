@@ -33,6 +33,11 @@
 
   <style>
     
+    :root {
+      --primary-color: rgb(146, 169, 28);
+      --secondary-color: rgb(242, 244, 151);
+    }
+
     .box {
       border-radius: 10px;
       border: 1px solid black;
@@ -40,29 +45,46 @@
       padding: 10px;
     }
 
+    .box button{
+      width: 20%;
+      height: 44px;
+      font-size: 16px;
+      background-color: var(--secondary-color);
+      border: none;
+      border-radius: 4px;
+      color: rgb(7, 1, 1);
+      cursor: pointer;
+      
+    }
+
+  
+    
     .login-box {
-      width: 1000px;
-      background-color: rgb(218, 102, 102);
+      width: 100%;
+      background-color: var(--primary-color);
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       padding: 50px;
+      color: #357468;
     }
     .login-box h1 {
       margin: 0 0 20px;
-      font-size: 24px;
+      font-size: 30px;
       font-weight: 500;
+      color: white;
+      text-align: center;
     }
-    .login-box  {
+    .login-box label {
       display: block;
       margin-bottom: 10px;
-      font-size: 14px;
-      color: #666;
+      font-size: 24px;
+      color: rgb(8, 57, 20);
     }
     .login-box input {
       width: 100%;
       height: 44px;
       font-size: 16px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--secondary-color);
       border-radius: 4px;
       margin-bottom: 10px;
       padding: 0 15px;
@@ -70,11 +92,11 @@
     .login-box button {
       width: 50%;
       height: 44px;
-      font-size: 10px;
-      background-color: #3b8070;
+      font-size: 16px;
+      background-color: var(--secondary-color);
       border: none;
       border-radius: 4px;
-      color: rgb(114, 203, 13);
+      color: white;
       cursor: pointer;
       padding: 10px;
     }
@@ -84,10 +106,10 @@
     .login-box p {
       margin: 0;
       font-size: 12px;
-      color: rgb(141, 21, 21);
+      color: white;
     }
     .login-box p a {
-      color: rgb(148, 18, 18);
+      color: white;
       text-decoration: none;
     }
     
@@ -95,7 +117,7 @@
       width: 100%;
       height: 44px;
       font-size: 16px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--secondary-color);
       border-radius: 4px;
       margin-bottom: 10px;
       margin-left: 0px;
@@ -104,14 +126,23 @@
 
     body {
       font-family: sans-serif;
-      color: rgb(148, 18, 18);
+      color: var(--primary-color);
     }
     form {
       width: 500px;
       margin: 0 auto;
       text-align: center;
     }
-    input[type="text-tank"], input[type="number-tank"] {
+    input[type="text"] {
+      color: rgb(9, 4, 4);
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 8px 0;
+      padding: 12px 20px;
+    }
+    input[type="text-tank"], input[type="number-tank"]{
       width: 100%;
       box-sizing: border-box;
       border: 1px solid #ccc;
@@ -120,7 +151,7 @@
       padding: 12px 20px;
     }
     input[type="submit-tank"] {
-      background-color: #4CAF50;
+      background-color: var(--secondary-color);
       color: white;
       border: none;
       border-radius: 4px;
@@ -132,8 +163,9 @@
       background-color: #45a049;
     }
 
+
     .btn {
-			background-color: #ddd;
+			background-color: var(--primary-color);
 			border: none;
 			color: white;
 			padding: 16px 32px;
@@ -149,12 +181,33 @@
 
 		.btn.completed {
 			background-color: green;
+      text-align: center;
+      
+		}
+
+    .btn.failed {
+			background-color: rgb(226, 123, 99);
+      text-align: center;
+      
 		}
 
 		.btn.incomplete {
-			background-color: rgb(233, 27, 27);
+			background-color: rgb(205, 237, 21);
+      text-align: center;
+      
 		}
 
+    
+    .notification {
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			padding: 10px;
+			background-color: rgb(219, 75, 75);
+			border: 1px solid #ccc;
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+			z-index: 1;
+		}
         * {
             margin: 0;
             padding: 0;
@@ -163,7 +216,7 @@
 
         body {
             font-family: arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #4093e6;
         }
 
         .container {
@@ -188,7 +241,7 @@
         }
 
         .search-box input[type="text"] {
-            width: 500px;
+            width: 700px;
             height: 40px;
             border-radius: 25px;
             border: none;
@@ -330,7 +383,7 @@
 
 
 
-  <div id="Home" class="panel" >
+  <div id="Home" class="login-box" >
 
 
     <body>
@@ -357,7 +410,8 @@
             </div>
 
             <div>
-                <div id="container"></div>
+                <div id="container" style="display: none;"></div>
+                <label id="lookupMessage" style="display: none;">You don't have access to this device.</label>
             </div>
     
     

@@ -287,6 +287,7 @@ const container = document.getElementById('container');
       <p>Device Type: ${element.type}</p>
       <p>Manager: ${element.tankManager}</p>
       <p>Viewers: ${element.tankViewers}</p>
+      <p>Storage Location: ${readContainerUrl+"#Device"+element.DeviceID}</p>
       <h3>Device Data</h3>
       <p>Value: ${element.value}</p>
       <p>Lat/Long: ${element.lat_long}</p>
@@ -301,6 +302,9 @@ const container = document.getElementById('container');
     box.appendChild(editButton);
 
     const revokeAccessButton = document.createElement("button");
+    
+    // Set the margin-left property
+    revokeAccessButton.style.marginLeft = "30px";
     revokeAccessButton.textContent = "Revoke All Access";
     revokeAccessButton.className = "revokeAccessButton-button"; // Add class name
     revokeAccessButton.id = "revokeAccessButton-button-" + element.DeviceID;
@@ -859,13 +863,19 @@ async function searchDevice(deviceLocation){
   try {
     // Attempt to retrieve the reading list in case it already exists.
     myTanks = await getSolidDataset(readContainerUrl, { fetch: fetch });
+    document.getElementById("lookupMessage").style="display:none";
+    document.getElementById("container").style="display:show";
     
   } catch (error) {
     if (typeof error.statusCode === "number" && error.statusCode === 404) {
       // if not found, create a new SolidDataset (i.e., the reading list)
       console.log("Nothing found at the location "+ readContainerUrl);
+      document.getElementById("container").style="display:none";
+      document.getElementById("lookupMessage").style="display:show";
       
     } else {
+      document.getElementById("container").style="display:none";
+      document.getElementById("lookupMessage").style="display:show";
       console.error(error.message);
       
     }
@@ -912,6 +922,7 @@ async function searchDevice(deviceLocation){
         <p>Device Type: ${element.type}</p>
         <p>Manager: ${element.tankManager}</p>
         <p>Viewers: ${element.tankViewers}</p>
+        <p>Storage Location: ${readContainerUrl+"#Device"+element.DeviceID}</p>
         <h3>Device Data</h3>
         <p>Value: ${element.value}</p>
         <p>Lat/Long: ${element.lat_long}</p>

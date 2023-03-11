@@ -37,25 +37,58 @@
       --primary-color: rgb(146, 169, 28);
       --secondary-color: rgb(242, 244, 151);
     }
+
+
+    
+    .notification-box{
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 40%;
+      height: 25%;
+      background-color: rgba(17, 236, 222, 0.432);;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 50px;
+      color: #010519;
+    }
+
+    .notification-box h1 {
+      margin: 0 0 20px;
+      font-size: 30px;
+      font-weight: 500;
+      color: white;
+      text-align: center;
+    }
+
+    .notification-box label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 24px;
+      color: rgb(8, 57, 20);
+    }
+
     
     .login-box {
-      width: 800px;
+      width: 100%;
       background-color: var(--primary-color);
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       padding: 50px;
+      color: #357468;
     }
     .login-box h1 {
       margin: 0 0 20px;
-      font-size: 24px;
+      font-size: 30px;
       font-weight: 500;
       color: white;
+      text-align: center;
     }
     .login-box label {
       display: block;
       margin-bottom: 10px;
-      font-size: 14px;
-      color: white;
+      font-size: 24px;
+      color: rgb(8, 57, 20);
     }
     .login-box input {
       width: 100%;
@@ -158,27 +191,22 @@
 
 		.btn.completed {
 			background-color: green;
+      text-align: center;
+      
 		}
 
     .btn.failed {
 			background-color: rgb(226, 123, 99);
+      text-align: center;
+      
 		}
 
 		.btn.incomplete {
 			background-color: rgb(205, 237, 21);
+      text-align: center;
+      
 		}
 
-    
-    .notification {
-			position: fixed;
-			top: 10px;
-			right: 10px;
-			padding: 10px;
-			background-color: rgb(219, 75, 75);
-			border: 1px solid #ccc;
-			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-			z-index: 1;
-		}
   </style>
   
 </head>
@@ -224,7 +252,7 @@
 <div class="page-heading">
   <h1 class="entry-title">SOLID Play</h1>
   <h5 style="color: white;">A Plug-and-Play Application for IoT devices built using the SOLID Initative.</h5>
-  <label id="notification-box" style = "display:none" >NEW NOTIFICATION: Data has been modified by an IoT device.</label>
+  
   <!-- <h5 style="color: white;">which was destroyed in the opening engagement of the Civil War on June 30th, 1922.</h5> -->
   
   <ul class="entry-breadcrumb">
@@ -274,7 +302,7 @@
             <div id="read" class="login-box"style="display: none;">
               <div class="row">
                 <!-- <label id="readlabel" for="myWebID" size="50" width="600"  > My WebID: </label> -->
-                <input type="text" id="myWebID" name="myWebID" size="50" width="600" disabled style="display: none;">
+                <input type="text" id="myWebID" name="myWebID" size="50" width="600" disabled style="display: none;" >
                 
                 <!-- <button class=".btn" name="btnRead" id="btnRead">Show Pods </button> -->
               </div>
@@ -282,9 +310,9 @@
             
             <div id="write" class="login-box">
               <div class="row">
-                <label id="readlabel" for="myWebID" size="50" width="600"  > My WebID: </label>
-                <label id="writelabel">SELECT POD </label>
-                <select id="select-pod" name="select-pod" widths: 120>
+                <h1 id="readlabel" for="myWebID"> My WebID: </h1>
+                <label id="writelabel">Choose Pod Location: </label>
+                <select id="select-pod" name="select-pod">
                   <option value="">--Please select your Pod--</option>
                 </select>dosing-data/
               </div>
@@ -354,6 +382,10 @@
                 </div>
 
           </div>
+        </div>
+        <div id="notification-box" style = "display:none" class="notification-box">
+          <h1>NEW NOTIFICATION!</h1>
+          <label>Data has been modified by an IoT device.</label>
         </div>
     </body>
   </div>
