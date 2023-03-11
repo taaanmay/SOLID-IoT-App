@@ -300,6 +300,13 @@ const container = document.getElementById('container');
     editButton.id = "edit-button-" + element.DeviceID;
     box.appendChild(editButton);
 
+    const revokeAccessButton = document.createElement("button");
+    revokeAccessButton.textContent = "Revoke All Access";
+    revokeAccessButton.className = "revokeAccessButton-button"; // Add class name
+    revokeAccessButton.id = "revokeAccessButton-button-" + element.DeviceID;
+    box.appendChild(revokeAccessButton);
+
+
     container.appendChild(box);
     
   });
@@ -307,6 +314,40 @@ const container = document.getElementById('container');
 
 // Turning Button Green showing that the results have been generated  
 document.getElementById("submit-read-tank").className = "btn completed";  
+
+
+///////////////////// LOGIC For REVOKING ACCESS TO DEVICES ////////////////
+
+
+const revokeButtons = document.getElementsByClassName("revokeAccessButton-button");
+// Loop through each edit button and add a click event listener
+Array.from(revokeButtons).forEach(revokeButton => {
+  revokeButton.addEventListener("click", async () => {
+    const buttonId = revokeButton.id;
+    console.log("revokeButton clicked with ID: " + buttonId);
+    // Remove "edit-button-" prefix from the ID
+    const deviceId = buttonId.substring("revokeAccessButton-button-".length);
+    console.log(deviceId);
+
+    // Create the confirmation message
+    const confirmationMessage = "Are you sure you want to Revoke Viewing Access for everyone for Device-" + deviceId + "?";
+    if (confirm(confirmationMessage)) {
+      // User clicked OK, save the changes
+      
+      revokeAllAccess(readContainerUrl, deviceId);
+
+    } else {
+      // User clicked Cancel, do nothing
+    }
+
+  });
+});
+
+
+
+
+
+
 
 ///////////////////// LOGIC For EDIT BUTTON ON DEVICES ////////////////
 
@@ -456,6 +497,119 @@ universalAccess.setAgentAccess(
   logAccessInfo(`https://id.inrupt.com/iotserver01`, newAccess,resource)
 });
 }
+
+
+async function revokeAllAccess(podLocation, deviceId){
+
+  
+  
+  var doesDeviceExist = false;
+  let deviceList;
+  
+  let thing;
+  try {
+      // Attempt to retrieve the reading list in case it already exists.
+      deviceList = await getSolidDataset(podLocation, 
+      { fetch: fetch });
+      // Clear the list to override the whole list
+      let items = getThingAll(deviceList);
+      items.forEach((item) => {
+          if(getStringNoLocale(item,SCHEMA_INRUPT.identifier) == deviceId){
+            console.log("Found Device with Device Id");
+            thing = item;
+            doesDeviceExist = true;
+            
+          }
+      });
+      
+  } catch (error) {
+      if (typeof error.statusCode === "number" && error.statusCode === 404) {
+          // if not found, create a new SolidDataset (i.e., the reading list)
+          console.log("Did not find a Device with this ID");
+      } 
+      else {
+          console.error(error.message);
+      }
+  }
+
+  let item = createThing({
+    name: "Device"+deviceId
+    });
+    item = addStringNoLocale(item, SCHEMA_INRUPT.identifier, deviceId);
+    
+    
+      // FOR EACH VIEWER REVOKE ACCESS
+      const viewers = getStringNoLocale(thing, 'https://schema.org/viewer');
+      console.log("Viewers --> "+viewers);
+      const viewerList = viewers.split(", ");
+      // Loop through each user in the array and call the giveReadAccess function
+      for (let i = 0; i < viewerList.length; i++) {
+        const viewer = viewerList[i];
+        universalAccess.setAgentAccess(
+            podLocation,         // Resource
+            viewer,     // Agent
+            { read: false, append: false, write: false, control: false  },          // Access object
+            { fetch: fetch }                         // fetch function from authenticated session
+          ).then((newAccess) => {
+            logAccessInfo(viewer, newAccess,podLocation)
+          });
+      }
+              
+      console.log("Viewers Removed = "+viewers);
+    
+    
+    
+    var existingManager = getStringNoLocale(thing, 'https://schema.org/creator');
+    item = addStringNoLocale(item, `https://schema.org/creator`, existingManager);
+      
+    var existingValue = getStringNoLocale(thing, SCHEMA_INRUPT.value);
+    item = addStringNoLocale(item, SCHEMA_INRUPT.value, existingValue);
+
+    var existingName= getStringNoLocale(thing, SCHEMA_INRUPT.name);
+    item = addStringNoLocale(item, SCHEMA_INRUPT.name, existingName);
+
+    var existingType= getStringNoLocale(thing, RDF.type);
+    item = addStringNoLocale(item, RDF.type, existingType);
+
+    var lat_long= getStringNoLocale(thing, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon');
+    item = addStringNoLocale(item, 'http://www.w3.org/2003/01/geo/wgs84_pos/lat_lon', lat_long);
+
+    var currentdate = new Date(); 
+    var datetime = currentdate.getDate() + "/"
+                    + (currentdate.getMonth()+1)  + "/" 
+                    + currentdate.getFullYear() + " "  
+                    + currentdate.getHours() + ":"  
+                    + currentdate.getMinutes() + ":" 
+                    + currentdate.getSeconds();
+    item = addStringNoLocale(item, SCHEMA_INRUPT.dateModified, datetime);
+    item = addStringNoLocale(item, 'https://schema.org/viewer', "0");
+    deviceList = setThing(deviceList, item);
+    
+    
+    try {
+    // Save the SolidDataset
+    let saveDeviceList = await saveSolidDatasetAt(
+        podLocation,
+        deviceList, 
+        { fetch: fetch }
+        );
+        console.log('Saved Manager and Viewer Data '+ saveDeviceList); 
+        return true; 
+        
+        
+    } catch (error) {
+        console.log("Device Not saved in Solid Pod => ");
+        console.error(error.message);
+        return false;
+
+        
+    }
+
+
+
+
+  }
+
 
 function giveFullAccess(resource, webId){
   universalAccess.setAgentAccess(
@@ -700,16 +854,6 @@ async function addDevice(podLocation, id, name, type, deviceManager, viewers, st
 async function searchDevice(deviceLocation){
   let readContainerUrl =  deviceLocation;
 
-    // ... authentication logic has been omitted
-
-    const websocket = new WebsocketNotification(
-      containerUrl,
-      { fetch: fetch }
-    );
-
-    websocket.on("Websocket Message", console.log);
-
-    websocket.connect();
 
   let myTanks;
   try {
@@ -720,12 +864,14 @@ async function searchDevice(deviceLocation){
     if (typeof error.statusCode === "number" && error.statusCode === 404) {
       // if not found, create a new SolidDataset (i.e., the reading list)
       console.log("Nothing found at the location "+ readContainerUrl);
-      destroy();
+      
     } else {
       console.error(error.message);
+      
     }
   }
 
+    
     let items = getThingAll(myTanks);
     console.log(myTanks);
     console.log(items);
@@ -772,13 +918,7 @@ async function searchDevice(deviceLocation){
         <p>Date Modified: ${element.date_modified}</p>
       `;
 
-      // Add edit button to the div with a unique ID
-      const editButton = document.createElement("button");
-      editButton.textContent = "Edit";
-      editButton.className = "edit-button"; // Add class name
-      editButton.id = "edit-button-" + element.DeviceID;
-      box.appendChild(editButton);
-
+    
       container.appendChild(box);
       
     });
