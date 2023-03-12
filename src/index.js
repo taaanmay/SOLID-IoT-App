@@ -371,14 +371,14 @@ Array.from(editButtons).forEach(editButton => {
     console.log(deviceId);
 
     // Create the prompt message
-    const message = "Device " + deviceId + "\nEnter new Manager:";
-    const manager = prompt(message, "");
+    let message = "Device " + deviceId + "\nEnter new Manager:";
+    let manager = prompt(message, "");
     if (manager === null) {
       // User clicked Cancel, do nothing
       return;
     }
 
-    const viewers = prompt("Enter new Viewers:", "");
+    let viewers = prompt("Enter new Viewers:", "");
 
     if (viewers === null) {
       // User clicked Cancel, do nothing
@@ -386,8 +386,16 @@ Array.from(editButtons).forEach(editButton => {
     }
 
     // Create the confirmation message
-    const confirmationMessage = "Save changes to Device " + deviceId + "?";
+    let confirmationMessage = "Save changes to Device " + deviceId + "?";
     if (confirm(confirmationMessage)) {
+
+      
+      // Add Inrupt ID if webID is just the name
+      if(manager.length < "https://id.inrupt.com/".length){
+        manager = "https://id.inrupt.com/"+manager;
+        console.log("Modified Manager Web ID");
+      }
+      
       // User clicked OK, save the changes
       console.log("New Manager:", manager);
       console.log("New Viewers:", viewers);
@@ -547,12 +555,12 @@ async function revokeAllAccess(podLocation, deviceId){
     
     
       // FOR EACH VIEWER REVOKE ACCESS
-      const viewers = getStringNoLocale(thing, 'https://schema.org/viewer');
+      var viewers = getStringNoLocale(thing, 'https://schema.org/viewer');
       console.log("Viewers --> "+viewers);
-      const viewerList = viewers.split(", ");
+      var viewerList = viewers.split(", ");
       // Loop through each user in the array and call the giveReadAccess function
       for (let i = 0; i < viewerList.length; i++) {
-        const viewer = viewerList[i];
+        var viewer = viewerList[i];
         universalAccess.setAgentAccess(
             podLocation,         // Resource
             viewer,     // Agent
@@ -703,10 +711,15 @@ async function addManagerViewers(podLocation, deviceId, manager, viewers){
         //   item = addStringNoLocale(item, 'https://schema.org/viewer'+index, viewer);        
         // });
         item = addStringNoLocale(item, 'https://schema.org/viewer', viewers);
-        const viewerList = viewers.split(", ");
+        let viewerList = viewers.split(", ");
         // Loop through each user in the array and call the giveReadAccess function
         for (let i = 0; i < viewerList.length; i++) {
-          const viewer = viewerList[i];
+          let viewer = viewerList[i];
+           // Add Inrupt ID if webID is just the name
+          if(viewer.length < "https://id.inrupt.com/".length){
+            viewer = "https://id.inrupt.com/"+viewer;
+            console.log("Modified viewer Web ID");
+          }
           giveReadAccess(podLocation, viewer);
         }
                 
