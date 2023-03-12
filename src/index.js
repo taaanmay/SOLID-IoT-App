@@ -110,7 +110,13 @@ async function handleRedirectAfterLogin() {
   }
 
 
-  const sensorContactsUri = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/";  
+
+  // Show the List of Pods
+  let sensorContactsUri = await getMyPods();
+
+  console.log(`Notifications Pod URL -> ${sensorContactsUri}`);
+  //const sensorContactsUri = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/";  
+
 
   const sensorContactsSocket = new WebsocketNotification(
       sensorContactsUri,
@@ -132,13 +138,6 @@ async function handleRedirectAfterLogin() {
   // sensorContactsSocket.on("message", async (notif) => {
   //     console.log(`sensor contacts socket: ${notif}`+notif);   
   // })
-
-
-  // Show the List of Pods
-  getMyPods();
-  
-
-
   sensorContactsSocket.on("message", async(notif)=>{
     console.log();
     document.getElementById("notification-box").style = "display:show";
@@ -190,14 +189,19 @@ async function getMyPods() {
   
 
   // Update the page with the retrieved values.
+  let podToReturn = "https://storage.inrupt.com/5e8daef3-5fec-4bde-aed6-0084df9dd6bb/dosing-data/"
 
   mypods.forEach((mypod) => {
     let podOption = document.createElement("option");
     podOption.textContent = mypod;
     podOption.value = mypod;
     selectorPod.appendChild(podOption);
+    if(mypod.length != 0){
+      podToReturn = mypod+"dosing-data/";
+    }
   });
 
+  return podToReturn;
   
 }
 
@@ -209,18 +213,18 @@ export function sendDataToFrontEnd(){
 
 async function readDataFromContainer(){
 
-  const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/";
+  // const containerUrl = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/";
 
-    // ... authentication logic has been omitted
+  //   // ... authentication logic has been omitted
 
-    const websocket = new WebsocketNotification(
-      containerUrl,
-      { fetch: fetch }
-    );
+  //   const websocket = new WebsocketNotification(
+  //     containerUrl,
+  //     { fetch: fetch }
+  //   );
 
-    websocket.on("Websocket Message", console.log);
+  //   websocket.on("Websocket Message", console.log);
 
-    websocket.connect();
+  //   websocket.connect();
   
   let SELECTED_POD_TEMP = document.getElementById("select-pod").value;
   let readContainerUrl = `${SELECTED_POD_TEMP}dosing-data/`;
