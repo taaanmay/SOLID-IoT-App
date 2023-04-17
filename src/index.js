@@ -87,7 +87,7 @@ async function handleRedirectAfterLogin() {
     login({
       oidcIssuer: "https://login.inrupt.com",
       redirectUrl: window.location.href,
-      clientName: "Getting started app",
+      clientName: "SOLID-Play Application",
       restorePreviousSession: true
     });
     
@@ -113,7 +113,12 @@ async function handleRedirectAfterLogin() {
 
   // Show the List of Pods
   let sensorContactsUri = await getMyPods();
+  
+  let img = document.getElementById("profile-picture").getElementsByTagName('img')[0];
+  
 
+  let profilePicUrl = sensorContactsUri.replace('/dosing-data', '');
+  img.src = profilePicUrl + "/profile-picture.png";
   console.log(`Notifications Pod URL -> ${sensorContactsUri}`);
   //const sensorContactsUri = "https://storage.inrupt.com/dcc8eac4-6003-4709-b4e1-cced55a20ac3/dosing-data/";  
 
@@ -390,11 +395,11 @@ Array.from(editButtons).forEach(editButton => {
     if (confirm(confirmationMessage)) {
 
       
-      // Add Inrupt ID if webID is just the name
-      if(manager.length < "https://id.inrupt.com/".length){
-        manager = "https://id.inrupt.com/"+manager;
-        console.log("Modified Manager Web ID");
-      }
+      // // Add Inrupt ID if webID is just the name
+      // if(manager.length < "https://id.inrupt.com/".length){
+      //   manager = "https://id.inrupt.com/"+manager;
+      //   console.log("Modified Manager Web ID");
+      // }
       
       // User clicked OK, save the changes
       console.log("New Manager:", manager);
@@ -561,6 +566,10 @@ async function revokeAllAccess(podLocation, deviceId){
       // Loop through each user in the array and call the giveReadAccess function
       for (let i = 0; i < viewerList.length; i++) {
         var viewer = viewerList[i];
+        if(viewer.length < "https://id.inrupt.com/".length){
+          viewer = "https://id.inrupt.com/"+viewer;
+          console.log("Modified viewer Web ID");
+        }
         universalAccess.setAgentAccess(
             podLocation,         // Resource
             viewer,     // Agent
